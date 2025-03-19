@@ -8,12 +8,11 @@ class Node:
     x: float  # coordinate assolute in millimetri
     y: float  # coordinate assolute in millimetri
     coordinates: tuple[float, float]  # coordinate assolute in millimetri
-
-    restraints: tuple[bool, bool, bool] = (
-        False,
-        False,
-        False,
-    )  # vicoli (x, y, rz)
+    restraints: list[int, int, int] = [
+        0,
+        0,
+        0,
+    ]  # vincoli (x, y, rz) in coordinate globali (1 = vincolato, 0 = libero)
 
     M0: float = 0  # momento esterno applicato (in coordinate globali) in kNm
     V0: float = 0  # forza verticale esterna applicata  (in coordinate globali) in kN
@@ -25,9 +24,9 @@ class Node:
         self.x, self.y = coordinates
         print(f"created new node at coordinates {self.coordinates}")
 
-    def set_restraints(self, x: bool, y: bool, rz: bool):
+    def set_restraints(self, x: int, y: int, rz: int):
         """Set GLOBAL restraints for the node. True = fix; False = free"""
-        self.restraints = (x, y, rz)
+        self.restraints = [x, y, rz]
         print(
             f"set restraints for node {self.n}. Global translation x: {'fixed' if x else 'free'}, Global translation y: {'fixed' if y else 'free'}, Global rotation rz: {'fixed' if rz else 'free'}"
         )
@@ -41,7 +40,7 @@ class Node:
 
     def load_vector(self) -> np.ndarray:
         """Returns the load vector for the node"""
-        return np.array([[self.H0, self.V0, self.M0]], dtype=float)
+        return np.array([self.H0, self.V0, self.M0], dtype=float)
 
     # dx0 float # spostamento in coordinate globali imposto dall'esterno (in mm)
     # dy0 float # spostamento in coordinate globali imposto dall'esterno (in mm)
