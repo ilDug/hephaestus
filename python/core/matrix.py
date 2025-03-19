@@ -102,3 +102,37 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray
 
 
 # #############################################################################
+
+
+def generate_rotation_matrix_2d(angle: float) -> np.ndarray:
+    """
+    Generates the rotation matrix for a 2D beam element based on the
+    rotation angle.
+    Parameters:
+        angle (float): The rotation angle in radians.
+    Returns:
+        numpy.ndarray: A 6x6 rotation matrix representing the beam's
+        rotation in local coordinates.
+    Notes:
+        The rotation matrix is used to transform the stiffness matrix
+        from local to global coordinates.
+    Symbols:
+        theta: Rotation angle.
+        c: Cosine of the rotation angle.
+        s: Sine of the rotation angle.
+    """
+    c = np.cos(angle)
+    s = np.sin(angle)
+
+    rotation_matrix = np.array(
+        [
+            [c, s, 0, 0, 0, 0],
+            [-s, c, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0, 0],
+            [0, 0, 0, c, s, 0],
+            [0, 0, 0, -s, c, 0],
+            [0, 0, 0, 0, 0, 1],
+        ]
+    )
+
+    return rotation_matrix

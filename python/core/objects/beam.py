@@ -1,6 +1,6 @@
 import numpy as np
 from .node import Node
-from ..matrix import generate_stiffness_matrix_2d
+from ..matrix import generate_stiffness_matrix_2d, generate_rotation_matrix_2d
 
 class Beam:
     Ix: int  # momento d'inerzia in mm4 lungo l'asse x
@@ -37,7 +37,7 @@ class Beam:
         self.Ix = Ix
         self.Iy = Iy
         return self
-    
+
     def stiffness_matrix(self) -> np.ndarray:
         """genera la matrice di rigidezza della trave"""
         try:
@@ -46,5 +46,19 @@ class Beam:
             print(f"error generating stiffness matrix: {e}")
             sm = None
         return sm
-    
 
+    def rotation_angle(self) -> float:
+        """calcola l'angolo di rotazione della trave in radianti"""
+        dx = self.j.x - self.i.x
+        dy = self.j.y - self.i.y
+        if dx == 0:
+            return np.pi / 2
+        if dy == 0:
+            return 0
+        else:
+            return np.arctan(dy / dx)
+
+    def rotation_matrix(self) -> np.ndarray:
+        """genera la matrice di rotazione della trave"""
+        angle = self.rotation_angle()
+        return generate_rotation_matrix_2d(angle)
