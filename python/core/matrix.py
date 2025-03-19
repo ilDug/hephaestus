@@ -1,8 +1,9 @@
 import numpy as np
 
-def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float):
+
+def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray:
     """
-    Generates the stiffness matrix for a beam element based on its material 
+    Generates the stiffness matrix for a beam element based on its material
     and geometric properties.
     Parameters:
         E (int): Young's modulus of the material (elastic modulus) in MPa.
@@ -10,14 +11,14 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float):
         I (int): Moment of inertia of the beam's cross-section in mm4.
         L (float): Length of the beam in mm.
     Returns:
-        numpy.ndarray: A 6x6 stiffness matrix representing the beam's 
+        numpy.ndarray: A 6x6 stiffness matrix representing the beam's
         stiffness in local coordinates.
     Raises:
         ValueError: If any of the input parameters (E, A, I, L) are None.
     Notes:
-        The stiffness matrix is calculated based on the beam's axial, 
-        shear, and bending properties. The matrix is symmetric and 
-        represents the relationship between forces/moments and 
+        The stiffness matrix is calculated based on the beam's axial,
+        shear, and bending properties. The matrix is symmetric and
+        represents the relationship between forces/moments and
         displacements/rotations at the beam's two ends.
     Symbols:
         i: Initial node of the beam.
@@ -75,14 +76,21 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float):
     Kmjvj = -6 * E * I / L**2
     Kmjrj = 4 * E * I / L
 
-    return [
-        [Kniui, Knivi, Kniri, Kniuj, Knivj, Knirj],
-        [Ktiui, Ktivi, Ktiri, Ktiuj, Ktivj, Ktirj],
-        [Kmiui, Kmivi, Kmiri, Kmiuj, Kmivj, Kmirj],
-        [Knjui, Knjvi, Knjri, Knjuj, Knjvj, Knjrj],
-        [Ktjui, Ktjvi, Ktjri, Ktjuj, Ktjvj, Ktjrj],
-        [Kmjui, Kmjvi, Kmjri, Kmjuj, Kmjvj, Kmjrj],
-    ]
+    stiffness_matrix = np.array(
+        [
+            [Kniui, Knivi, Kniri, Kniuj, Knivj, Knirj],
+            [Ktiui, Ktivi, Ktiri, Ktiuj, Ktivj, Ktirj],
+            [Kmiui, Kmivi, Kmiri, Kmiuj, Kmivj, Kmirj],
+            [Knjui, Knjvi, Knjri, Knjuj, Knjvj, Knjrj],
+            [Ktjui, Ktjvi, Ktjri, Ktjuj, Ktjvj, Ktjrj],
+            [Kmjui, Kmjvi, Kmjri, Kmjuj, Kmjvj, Kmjrj],
+        ]
+    )
+
+    # arrotodamento a 3 decimali
+    # stiffness_matrix = np.round(stiffness_matrix, 3)
+
+    return stiffness_matrix
 
     #     [EA/L,      0,              0,          -EA/L,      0,              0],
     #     [0,         12EI/L**3,      6EI/L**2,   0,          -12EI/L**3,     6EI/L**2],
@@ -91,3 +99,6 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float):
     #     [0,         -12EI/L**3,     -6EI/L**2,  0,          12EI/L**3,      -6EI/L**2],
     #     [0          6EI/L**2,       2EI/L,      0,          -6EI/L**2,      4EI/L]
     # ]
+
+
+# #############################################################################
