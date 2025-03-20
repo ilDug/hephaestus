@@ -4,8 +4,8 @@ from fractions import Fraction
 
 
 E = 210000
-Ix = 1000000000000
-A = 3200000000
+Ix = 3492000  # mm4 HEA100
+A = 2124  # mm2 HEA100
 
 n1 = Node(1, (10, 10))
 n1.set_restraints(1, 1, 1)

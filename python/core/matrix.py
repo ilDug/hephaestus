@@ -84,7 +84,8 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray
             [Knjui, Knjvi, Knjri, Knjuj, Knjvj, Knjrj],
             [Ktjui, Ktjvi, Ktjri, Ktjuj, Ktjvj, Ktjrj],
             [Kmjui, Kmjvi, Kmjri, Kmjuj, Kmjvj, Kmjrj],
-        ]
+        ],
+        dtype=float,
     )
 
     # arrotodamento a 3 decimali
@@ -132,7 +133,8 @@ def generate_rotation_matrix_2d(angle: float) -> np.ndarray:
             [0, 0, 0, c, s, 0],
             [0, 0, 0, -s, c, 0],
             [0, 0, 0, 0, 0, 1],
-        ]
+        ],
+        dtype=float,
     )
 
     return rotation_matrix
