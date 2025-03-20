@@ -2,9 +2,7 @@ import numpy as np
 
 
 class Node:
-    n: int  # ID del nodo
-    c: tuple[float, float]  # coordinate assolute in metri
-
+    id: int  # ID del nodo
     x: float  # coordinate assolute in millimetri
     y: float  # coordinate assolute in millimetri
     coordinates: tuple[float, float]  # coordinate assolute in millimetri
@@ -19,7 +17,7 @@ class Node:
     H0: float = 0  # forza orizzontale esterna applicata ( in coordinate globali) in kN
 
     def __init__(self, id: int, coordinates: tuple[float, float]):
-        self.n = id
+        self.id = id
         self.coordinates = coordinates
         self.x, self.y = coordinates
         print(f"created new node at coordinates {self.coordinates}")
@@ -33,14 +31,14 @@ class Node:
         rz = int(bool(rz))
         self.restraints = [x, y, rz]
         print(
-            f"set restraints for node {self.n}. Global translation x: {'fixed' if x else 'free'}, Global translation y: {'fixed' if y else 'free'}, Global rotation rz: {'fixed' if rz else 'free'}"
+            f"set restraints for node {self.id}. Global translation x: {'fixed' if x else 'free'}, Global translation y: {'fixed' if y else 'free'}, Global rotation rz: {'fixed' if rz else 'free'}"
         )
 
     def apply_loads(self, Fx: float = 0, Fy: float = 0, Mz: float = 0):
         """Apply loads to the node. Fx, Fy, Mz in kN and kNm"""
         self.H0, self.V0, self.M0 = Fx * 1000, Fy * 1000, Mz * 1000
         print(
-            f"applied loads to node {self.n}. Fx: {(self.H0/1000):.02}kN, Fy: {(self.V0/1000):.02}kN, Mz: {(self.M0/1000):.02}kNm"
+            f"applied loads to node {self.id}. Fx: {(self.H0/1000):.02}kN, Fy: {(self.V0/1000):.02}kN, Mz: {(self.M0/1000):.02}kNm"
         )
 
     def load_vector(self) -> np.ndarray:

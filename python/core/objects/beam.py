@@ -2,7 +2,9 @@ import numpy as np
 from .node import Node
 from ..matrix import generate_stiffness_matrix_2d, generate_rotation_matrix_2d
 
+
 class Beam:
+    id: str  # identificativo della trave
     Ix: int  # momento d'inerzia in mm4 lungo l'asse x
     Iy: int  # momento d'inerzia in mm4 lungo l'asse y
     E: int  # modulo di elasticità in MPa (acciaio = 210000 MPa, N/mm2)
@@ -17,10 +19,8 @@ class Beam:
         self.i = start
         self.j = end
         self.L = ((self.j.x - self.i.x) ** 2 + (self.j.y - self.i.y) ** 2) ** (1 / 2)
-        print(
-            f"the length of the beam from node {
-              self.i.n} to {self.j.n} is {self.L}mm"
-        )
+        self.id = f"{self.i.id}-{self.j.id}"
+        print(f"the length of the beam `{self.id}` is {self.L}mm")
 
     def set_material(self, E: int) -> "Beam":
         """imposta il modulo di elasticità del materiale della trave.
@@ -41,7 +41,7 @@ class Beam:
     def stiffness_matrix(self) -> np.ndarray:
         """genera la matrice di rigidezza della trave"""
         try:
-            sm =  generate_stiffness_matrix_2d(self.E, self.A, self.Ix, self.L)
+            sm = generate_stiffness_matrix_2d(self.E, self.A, self.Ix, self.L)
         except Exception as e:
             print(f"error generating stiffness matrix: {e}")
             sm = None

@@ -1,28 +1,42 @@
-from core.objects import Node, Beam
+from core.objects import Node, Beam, Frame
 import numpy as np
 from fractions import Fraction
 
-
+# proprietà della trave: materiale e sezione
 E = 210000
 Ix = 3492000  # mm4 HEA100
 A = 2124  # mm2 HEA100
 
-n1 = Node(1, (10, 10))
-n1.set_restraints(1, 1, 1)
+# creo una struttura
+frame = Frame()
 
-n2 = Node(2, (15, 0))
-n2.apply_loads(Fy=-1)
+n1 = frame.add_node((0, 0))
+n2 = frame.add_node((1500, 0))
 
-b1 = Beam(n1, n2)
+b1 = frame.add_beam(1, 2)
 b1.set_material(E).set_section(A, Ix, Ix)
 
-angle_pi_format = f"{b1.rotation_angle() / np.pi:.2f}π"
-angle_fraction_format = f"{Fraction(b1.rotation_angle() / np.pi).limit_denominator()}π"
+frame.node(n1).set_restraints(True, True, True)
+frame.node(n2).apply_loads(Fy=-1)
 
-print(f"Rotation angle in π format: {angle_pi_format}")
-print(f"Rotation angle in π format: {angle_fraction_format}")
+for node in frame.nodes:
+    print("the node is:")
+    print(node.id, node.coordinates, node.restraints)
 
-np.set_printoptions(precision=0, floatmode="fixed", suppress=True)
+for beam in frame.beams:
+    print(beam.id, beam.L, beam.E, beam.A, beam.Ix, beam.Iy)
+    angle_pi_format = f"{b1.rotation_angle() / np.pi:.2f}π"
+    angle_fraction_format = (
+        f"{Fraction(b1.rotation_angle() / np.pi).limit_denominator()}π"
+    )
+    print(f"Rotation angle in π format: {angle_pi_format}")
+    print(f"Rotation angle in π  fractional format: {angle_fraction_format}")
+
+
+# #############################################################################
+
+
+np.set_printoptions(precision=3, floatmode="fixed", suppress=True)
 print("Stiffness matrix:")
 print(b1.stiffness_matrix())
 
@@ -51,7 +65,7 @@ det = np.linalg.det(global_stiffness_matrix_aux)
 print(f"Determinant: {det}")
 print(f"Dimensione matrice di rigidezza: {global_stiffness_matrix.shape}")
 
-np.set_printoptions(precision=3, floatmode="fixed", suppress=True)
+np.set_printoptions(precision=5, floatmode="fixed", suppress=True)
 global_stiffness_matrix_inv = np.linalg.inv(global_stiffness_matrix_aux)
 print("Inverse global stiffness matrix:")
 print(global_stiffness_matrix_inv)
