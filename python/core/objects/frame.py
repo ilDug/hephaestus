@@ -1,6 +1,9 @@
 from .beam import Beam
 from .node import Node
 import numpy as np
+from numpy.dtypes import StringDType
+from prettytable import PrettyTable
+
 
 class Frame:
 
@@ -33,7 +36,7 @@ class Frame:
         names = [f"{n1}-{n2}", f"{n2}-{n1}"]
         return next(beam for beam in self.beams if beam.id in names)
 
-    def restraints_vector(self) -> np.ndarray:
+    def restraints(self) -> np.ndarray:
         """Returns the restraints matrix for the frame"""
         return (
             np.concatenate([node.restraints for node in self.nodes])
@@ -41,7 +44,7 @@ class Frame:
             .reshape(-1, 1)
         )
 
-    def loads_vector(self) -> np.ndarray:
+    def loads(self) -> np.ndarray:
         """Returns the loads vector for the frame"""
         return np.concatenate([node.load_vector() for node in self.nodes]).reshape(
             -1, 1
@@ -69,15 +72,15 @@ class Frame:
             K[j : j + 3, i : i + 3] -= k_local[3:, :3]  # terzo quadrante
         return K
 
-    def displacemets_vector(self) -> np.ndarray:
+    def displacemets(self) -> np.ndarray:
         """Returns the displacements vector for the frame"""
         # [K] x {d} = {F}
         # {d} = [K]^-1 x {F}
 
         # calculate the global stiffness matrix, restraints vector, and loads vector
         K = self.global_stiffness_matrix()
-        R = self.restraints_vector()
-        F = self.loads_vector()
+        R = self.restraints()
+        F = self.loads()
 
         # setting the rows and columns of the restraints to zero
         # and setting the diagonal to 1 to avoid singular matrix
@@ -91,5 +94,61 @@ class Frame:
 
         # solve the equation [K] x {d} = {F} for {d}
         D = np.linalg.solve(Kr, F)
-
         return D
+
+    def reactions(self) -> np.ndarray:
+        """Solves the frame"""
+        # [A] = [K] x {d} - {F}
+
+        # calculate the global stiffness matrix, restraints vector, and loads vector
+        K = self.global_stiffness_matrix()
+        F = self.loads()
+        D = self.displacemets()
+
+        # [A] è il vettore colonna che contiene le reazioni vincolari
+        A = np.dot(K, D) - F
+        return A
+
+    def solve(self):
+        A = self.reactions()
+        R = self.restraints()
+        D = self.displacemets()
+        L = self.loads()
+
+        restraints_ = (
+            lambda x, y, r: f"[{'X' if x else '-'} {'X' if y else '-'} {'X' if r else '-'}]"
+        )
+
+        X = np.empty((len(self.nodes), 12), dtype=object)
+
+        X[:, 0] = [f"n{node.id}" for node in self.nodes]
+        X[:, 1] = [str(node.coordinates) for node in self.nodes]
+        X[:, 2] = [restraints_(*node.restraints) for node in self.nodes]
+        X[:, 3] = [f"{(float(A[i]))/1000:.1f} kN" for i in range(0, len(A), 3)]
+        X[:, 4] = [f"{(float(A[i]))/1000:.1f} kN" for i in range(1, len(A), 3)]
+        X[:, 5] = [f"{(float(A[i]))/1000:.1f} kNm" for i in range(2, len(A), 3)]
+        X[:, 6] = [f"{(float(L[i]))/1000:.1f} kN" for i in range(0, len(L), 3)]
+        X[:, 7] = [f"{(float(L[i]))/1000:.1f} kN" for i in range(1, len(L), 3)]
+        X[:, 8] = [f"{(float(L[i]))/1000:.1f} kNm" for i in range(2, len(L), 3)]
+        X[:, 9] = [f"{float(D[i]):.2f} mm" for i in range(0, len(D), 3)]
+        X[:, 10] = [f"{float(D[i]):.2f} mm" for i in range(1, len(D), 3)]
+        X[:, 11] = [f"{float(D[i]):.3f} rad" for i in range(2, len(D), 3)]
+
+        table = PrettyTable()
+        table.field_names = [
+            "Node",
+            "Coordinates",
+            "Restraints",
+            "Hr",
+            "Vr",
+            "Mr",
+            "Ha",
+            "Va",
+            "Ma",
+            "dx",
+            "dy",
+            "rz",
+        ]
+        table.add_rows(X.tolist())
+
+        return table

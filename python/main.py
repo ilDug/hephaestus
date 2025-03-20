@@ -27,7 +27,7 @@ for node in frame.nodes:
     print("the node is:")
     print(node.id, node.coordinates, node.restraints)
 
-np.set_printoptions(precision=3, floatmode="fixed", suppress=True)
+np.set_printoptions(precision=3, suppress=True)
 
 for beam in frame.beams:
     print(beam.id, beam.L, beam.E, beam.A, beam.Ix, beam.Iy)
@@ -44,38 +44,26 @@ for beam in frame.beams:
 
 
 print("Frame restraints:")
-print(frame.restraints_vector())
+print(frame.restraints())
 
 print("Frame loads:")
-print(frame.loads_vector())
+print(frame.loads())
 
-np.set_printoptions(precision=0, floatmode="fixed", suppress=True)
+np.set_printoptions(precision=0, suppress=True)
 print(f"Global stiffness matrix, with size: {frame.global_stiffness_matrix().shape}")
 global_stiffness_matrix = frame.global_stiffness_matrix()
 print(global_stiffness_matrix)
 
 
-np.set_printoptions(precision=5, floatmode="fixed", suppress=True)
+np.set_printoptions(precision=5, suppress=True)
 print("displacements:")
-print(frame.displacemets_vector())
+print(frame.displacemets())
+
+np.set_printoptions(precision=0, suppress=True)
+
+print("Reazioni vincolari:")
+print(frame.reactions().round(1))
 
 
-# #############################################################################
-
-
-# [K] x {d} = {F}
-# {d} = [K]^-1 x {F}
-displacements_matrix = np.dot(global_stiffness_matrix_aux, external_load_matrix)
-
-
-# [R] = [K] x {d} - {F}
-# reactions = np.dot(global_stiffness_matrix, displacements_matrix) - external_load_matrix
-kd = np.dot(global_stiffness_matrix, displacements_matrix)
-print("Kd:")
-print(kd)
-reactions = kd - external_load_matrix
-
-print("Reactions:")
-print(reactions)
-
-# #############################################################################
+print("risultati")
+print(frame.solve())
