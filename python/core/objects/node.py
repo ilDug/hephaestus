@@ -24,8 +24,13 @@ class Node:
         self.x, self.y = coordinates
         print(f"created new node at coordinates {self.coordinates}")
 
-    def set_restraints(self, x: int, y: int, rz: int):
+    def set_restraints(
+        self, x: int | bool = False, y: int | bool = False, rz: int | bool = False
+    ):
         """Set GLOBAL restraints for the node. True = fix; False = free"""
+        x = int(bool(x))
+        y = int(bool(y))
+        rz = int(bool(rz))
         self.restraints = [x, y, rz]
         print(
             f"set restraints for node {self.n}. Global translation x: {'fixed' if x else 'free'}, Global translation y: {'fixed' if y else 'free'}, Global rotation rz: {'fixed' if rz else 'free'}"
