@@ -130,9 +130,41 @@ class Frame:
         X[:, 6] = [f"{(float(L[i]))/1000:.1f} kN" for i in range(0, len(L), 3)]
         X[:, 7] = [f"{(float(L[i]))/1000:.1f} kN" for i in range(1, len(L), 3)]
         X[:, 8] = [f"{(float(L[i]))/1000:.1f} kNm" for i in range(2, len(L), 3)]
-        X[:, 9] = [f"{float(D[i]):.2f} mm" for i in range(0, len(D), 3)]
-        X[:, 10] = [f"{float(D[i]):.2f} mm" for i in range(1, len(D), 3)]
-        X[:, 11] = [f"{float(D[i]):.3f} rad" for i in range(2, len(D), 3)]
+        X[:, 9] = [f"{float(D[i]):.1f} mm" for i in range(0, len(D), 3)]
+        X[:, 10] = [f"{float(D[i]):.1f} mm" for i in range(1, len(D), 3)]
+        X[:, 11] = [f"{float(D[i]):.5f} rad" for i in range(2, len(D), 3)]
+
+        note = """
+Note:
+    kN = kiloNewton, kNm = kiloNewton meter, mm = millimeter, rad = radian
+
+    RESTRAINTS:
+    an X indicates a restrained degree of freedom, a - indicates a free degree of freedom
+    a node can be restrained in the horizontal, vertical, and rotational directions
+    ordererd as [X X X].
+    example: 
+    [X X -] is a hinge
+    [- - -] is a free node
+    [X - X] is a horizontal roller
+    [X X X] is a fixed support
+    [- - X] is guided support without rotation
+
+
+    REACTIONS:
+    - Hr = Horizontal reaction, 
+    - Vr = Vertical reaction, 
+    - Mr = Moment reaction
+
+    ACTIONS:
+    - Ha = Horizontal action, 
+    - Va = Vertical action, 
+    - Ma = Moment action
+
+    DISPLACEMENTS:
+    - dx = Displacement in the horizontal direction, 
+    - dy = Displacement in the vertical direction
+    - rz = Rotation around the z-axis
+        """
 
         table = PrettyTable()
         table.field_names = [
@@ -151,4 +183,5 @@ class Frame:
         ]
         table.add_rows(X.tolist())
 
+        return note + "\n" + table.get_string()
         return table

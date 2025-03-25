@@ -24,7 +24,7 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray
         i: Initial node of the beam.
         j: Final node of the beam.
         Kn: Axial stiffness.
-        Kt: Torsional stiffness.
+        Kt: Shear stiffness.
         Km: Bending stiffness.
         u: Displacement in the axial direction.
         v: Displacement in the transverse direction.

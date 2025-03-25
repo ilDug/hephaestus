@@ -65,5 +65,4 @@ print("Reazioni vincolari:")
 print(frame.reactions().round(1))
 
 
-print("risultati")
 print(frame.solve())
