@@ -38,6 +38,23 @@ class Beam:
         self.Iy = Iy
         return self
 
+    # def apply_distributed_load(
+    #     self, qi: float, qj: float = None, start: int = 0, end: int = None
+    # ) -> "Beam":
+    #     """applica un carico distribuito alla trave
+    #     qi = carico iniziale in N/mm
+    #     qj = carico finale in N/mm (default = None, carico uniforme)
+    #     start = posizione iniziale del carico distribuito in mm (default = 0)
+    #     end = posizione finale del carico distribuito in mm (default = None, lunghezza della trave)
+    #     """
+    #     if end is None:
+    #         end = self.L
+
+    #     if qj is None:
+    #         qj = qi
+
+    #     return self
+
     def stiffness_matrix(self) -> np.ndarray:
         """genera la matrice di rigidezza della trave"""
         try:

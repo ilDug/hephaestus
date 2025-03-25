@@ -11,21 +11,28 @@ A = 2124  # mm2 HEA100
 frame = Frame()
 
 n1 = frame.add_node((0, 0))
-n2 = frame.add_node((1500, 0))
+n2 = frame.add_node((1000, 0))
 n3 = frame.add_node((3000, 0))
+n4 = frame.add_node((7000, 0))
 
 b1 = frame.add_beam(1, 2)
 b2 = frame.add_beam(2, 3)
-b1.set_material(E).set_section(A, Ix, Ix)
-b2.set_material(E).set_section(A, Ix, Ix)
+b3 = frame.add_beam(3, 4)
+
+for beam in frame.beams:
+    beam.set_material(E).set_section(A, Ix, Ix)
+
 
 frame.node(n1).set_restraints(True, True, True)
 frame.node(n3).set_restraints(y=True)
+frame.node(n4).set_restraints(y=True)
+
 frame.node(n2).apply_loads(Fy=-1)
 
-for node in frame.nodes:
-    print("the node is:")
-    print(node.id, node.coordinates, node.restraints)
+
+# for node in frame.nodes:
+#     print("the node is:")
+#     print(node.id, node.coordinates, node.restraints)
 
 np.set_printoptions(precision=3, suppress=True)
 
