@@ -36,7 +36,7 @@ class Node:
 
     def apply_loads(self, Fx: float = 0, Fy: float = 0, Mz: float = 0):
         """Apply loads to the node. Fx, Fy, Mz in kN and kNm"""
-        self.H0, self.V0, self.M0 = Fx * 1000, Fy * 1000, Mz * 1000
+        self.H0, self.V0, self.M0 = Fx * 1000, Fy * 1000, Mz * 1000000
         print(
             f"applied loads to node {self.id}. Fx: {(self.H0/1000):.02}kN, Fy: {(self.V0/1000):.02}kN, Mz: {(self.M0/1000):.02}kNm"
         )
