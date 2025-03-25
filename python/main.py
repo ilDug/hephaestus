@@ -65,4 +65,4 @@ print("Reazioni vincolari:")
 print(frame.reactions().round(1))
 
 
-print(frame.solve())
+print(frame.generate_node_report())

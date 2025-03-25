@@ -109,9 +109,8 @@ class Frame:
         A = np.dot(K, D) - F
         return A
 
-    def solve(self):
+    def generate_node_report(self):
         A = self.reactions()
-        R = self.restraints()
         D = self.displacemets()
         L = self.loads()
 
@@ -184,4 +183,3 @@ Note:
         table.add_rows(X.tolist())
 
         return note + "\n" + table.get_string()
-        return table
