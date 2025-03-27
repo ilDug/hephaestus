@@ -55,14 +55,28 @@ class Beam:
 
     #     return self
 
-    def stiffness_matrix(self) -> np.ndarray:
-        """genera la matrice di rigidezza della trave"""
+    def stiffness_matrix_local(self) -> np.ndarray:
+        """genera la matrice di rigidezza locale della trave"""
         try:
-            sm = generate_stiffness_matrix_2d(self.E, self.A, self.Ix, self.L)
+            K = generate_stiffness_matrix_2d(self.E, self.A, self.Ix, self.L)
         except Exception as e:
             print(f"error generating stiffness matrix: {e}")
-            sm = None
-        return sm
+            K = None
+        return K
+
+    def stiffness_matrix(self) -> np.ndarray:
+        """genera la matrice di rigidezza della trave ruotata nel sistema globale"""
+        try:
+            K = self.stiffness_matrix_local()  # stiffness matrix locale
+            R = self.rotation_matrix()  # rotation matrix
+            Rt = np.transpose(R)  # trasposta della matrice di rotazione
+            # stiffness matrix trasformata nel sistema globale usando la matrice di rotazione
+            # [Kg] = [R]^T * [K] * [R]
+            Kg = np.dot(Rt, np.dot(K, R))
+        except Exception as e:
+            print(f"error generating stiffness matrix: {e}")
+            Kg = None
+        return Kg
 
     def rotation_angle(self) -> float:
         """calcola l'angolo di rotazione della trave in radianti"""
