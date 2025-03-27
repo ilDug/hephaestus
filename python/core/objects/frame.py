@@ -68,8 +68,8 @@ class Frame:
 
             K[i : i + 3, i : i + 3] += k_local[:3, :3]  # primo quadrante
             K[j : j + 3, j : j + 3] += k_local[3:, 3:]  # quarto quadrante
-            K[i : i + 3, j : j + 3] -= k_local[:3, 3:]  # secondo quadrante
-            K[j : j + 3, i : i + 3] -= k_local[3:, :3]  # terzo quadrante
+            K[i : i + 3, j : j + 3] += k_local[:3, 3:]  # secondo quadrante
+            K[j : j + 3, i : i + 3] += k_local[3:, :3]  # terzo quadrante
         return K
 
     def displacemets(self) -> np.ndarray:
