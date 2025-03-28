@@ -92,8 +92,15 @@ class Frame:
                 Kr[:, i] = 0
                 Kr[i, i] = 1  # Set diagonal to 1 to avoid singular matrix
 
+        # inverte i gradi di libertà con i gradi di vincolo in modo da
+        # annullare  le righe  del vettore dei carichi per i nodi vincolati
+        _R = np.logical_not(R).astype(int)
+
+        # annulla le righe del vettore dei carichi per i nodi vincolati
+        _F = _R * F
+
         # solve the equation [K] x {d} = {F} for {d}
-        D = np.linalg.solve(Kr, F)
+        D = np.linalg.solve(Kr, _F)
         return D
 
     def reactions(self) -> np.ndarray:
@@ -106,7 +113,7 @@ class Frame:
         D = self.displacemets()
 
         # [A] è il vettore colonna che contiene le reazioni vincolari
-        A = np.dot(K, D) - F
+        A = K @ D - F
         return A
 
     def generate_node_report(self):
