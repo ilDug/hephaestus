@@ -19,11 +19,11 @@ class Frame:
         self.nodes.append(node)
         return node.id
 
-    def add_beam(self, n1: int, n2: int) -> Beam:
+    def add_beam(self, i: int, j: int) -> Beam:
         """Aggiunge un elemento alla struttura"""
-        i = next(node for node in self.nodes if node.id == n1)
-        j = next(node for node in self.nodes if node.id == n2)
-        beam = Beam(i, j)
+        start = next(node for node in self.nodes if node.id == i)
+        end = next(node for node in self.nodes if node.id == j)
+        beam = Beam(start, end)
         self.beams.append(beam)
         return beam
 
@@ -39,9 +39,11 @@ class Frame:
     def restraints(self) -> np.ndarray:
         """Returns the restraints matrix for the frame"""
         return (
-            np.concatenate([node.restraints for node in self.nodes])
-            .astype(int)
-            .reshape(-1, 1)
+            np.concatenate(
+                [node.restraints for node in self.nodes]
+            )  # concatenates the restraints of all nodes
+            .astype(int)  # converts the restraints to integers
+            .reshape(-1, 1)  # reshapes the restraints to a column vector
         )
 
     def loads(self) -> np.ndarray:

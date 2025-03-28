@@ -11,23 +11,23 @@ A = 2124  # mm2 HEA100
 frame = Frame()
 
 n1 = frame.add_node((0, 0))
-n2 = frame.add_node((1000, 0))
-n3 = frame.add_node((3000, 0))
-n4 = frame.add_node((7000, 0))
+n2 = frame.add_node((500, 0))
+n3 = frame.add_node((1000, 0))
 
-b1 = frame.add_beam(n1, n2)
-b2 = frame.add_beam(n2, n3)
-b3 = frame.add_beam(n3, n4)
+
+b1 = frame.add_beam(i=n1, j=n2)
+b2 = frame.add_beam(i=n2, j=n3)
 
 for beam in frame.beams:
     beam.set_material(E).set_section(A, Ix, Ix)
 
 
 frame.node(n1).set_restraints(True, True, True)
-frame.node(n3).set_restraints(y=True)
-frame.node(n4).set_restraints(y=True)
+frame.node(n2).set_restraints(True, True, True)
+frame.node(n3).set_restraints(True, True, True)
 
-frame.node(n2).apply_loads(Fy=-1)
+
+frame.node(n1).apply_loads(Fy=-1)
 
 
 # for node in frame.nodes:

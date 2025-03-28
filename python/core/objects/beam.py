@@ -1,3 +1,4 @@
+from typing import Annotated
 import numpy as np
 from .node import Node
 from ..matrix import generate_stiffness_matrix_2d, generate_rotation_matrix_2d
@@ -13,6 +14,9 @@ class Beam:
 
     i: Node  # il nodo iniziale
     j: Node  # il nodo finale
+
+    i_release: bool = False  # rilascio del nodo iniziale
+    j_release: bool = False  # rilascio del nodo finale
 
     def __init__(self, start: Node, end: Node):
         """crea una nuova trave tra due nodi"""
@@ -36,6 +40,12 @@ class Beam:
         self.A = A
         self.Ix = Ix
         self.Iy = Iy
+        return self
+
+    def set_internal_releases(self, i: bool = False, j: bool = False) -> "Beam":
+        """imposta i rilasci interni della trave"""
+        self.i_release = i
+        self.j_release = j
         return self
 
     # def apply_distributed_load(
