@@ -92,12 +92,35 @@ class Beam:
         """calcola l'angolo di rotazione della trave in radianti"""
         dx = self.j.x - self.i.x
         dy = self.j.y - self.i.y
-        if dx == 0:
+
+        if dx == 0 and dy == 0:
+            raise ValueError("dx and dy are both 0")
+
+        # analzza i casi in cui dx o dy sono 0
+        if dx == 0 and dy > 0:
             return np.pi / 2
-        if dy == 0:
+
+        if dx == 0 and dy < 0:
+            return (3 / 2) * np.pi
+
+        if dy == 0 and dx > 0:
             return 0
-        else:
+
+        if dy == 0 and dx < 0:
+            return np.pi
+
+        # analizza i casi in cui dx o dy sono diversi da 0
+        if dx > 0 and dy > 0:  # primo quadrante
             return np.arctan(dy / dx)
+
+        if dx < 0 and dy > 0:  # secondo quadrante
+            return np.pi + np.arctan(dy / dx)
+
+        if dx < 0 and dy < 0:  # terzo quadrante
+            return np.pi + np.arctan(dy / dx)
+
+        if dx > 0 and dy < 0:  # quarto quadrante
+            return 2 * np.pi + np.arctan(dy / dx)
 
     def rotation_matrix(self) -> np.ndarray:
         """genera la matrice di rotazione della trave"""

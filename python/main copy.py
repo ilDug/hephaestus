@@ -23,11 +23,10 @@ for beam in frame.beams:
 
 
 frame.node(n1).set_restraints(True, True, True)
-frame.node(n2).set_restraints(True, True, True)
-frame.node(n3).set_restraints(True, True, True)
+frame.node(n3).set_restraints(False, True, False)
 
 
-frame.node(n1).apply_loads(Fy=-1)
+frame.node(n2).apply_loads(Fy=-1)
 
 
 # for node in frame.nodes:
