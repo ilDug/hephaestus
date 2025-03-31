@@ -1,7 +1,9 @@
 import numpy as np
 
 
-def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray:
+def generate_stiffness_matrix_2d(
+    E: int, A: int, I: int, L: float, ri: bool = True, rj: bool = False
+) -> np.ndarray:
     """
     Generates the stiffness matrix for a beam element based on its material
     and geometric properties.
@@ -10,6 +12,8 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray
         A (int): Cross-sectional area of the beam in mm2.
         I (int): Moment of inertia of the beam's cross-section in mm4.
         L (float): Length of the beam in mm.
+        ri (bool): Indicates if the initial node is released (default: False).
+        rj (bool): Indicates if the final node is released (default: False).
     Returns:
         numpy.ndarray: A 6x6 stiffness matrix representing the beam's
         stiffness in local coordinates.
@@ -34,47 +38,164 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray
     if None in [E, A, I, L]:
         raise ValueError("Some properties of the beam are not set")
 
-    Kniui = E * A / L
+    # reazioni assiali sul nodo i
+    Kniui = E * A / L  # dovuto alllo spostamento assiale del nodo i
     Knivi = 0
     Kniri = 0
-    Kniuj = -E * A / L
+    Kniuj = -E * A / L  # dovuto allo spostamento assiale del nodo j
     Knivj = 0
     Knirj = 0
 
-    Ktiui = 0
-    Ktivi = 12 * E * I / L**3
-    Ktiri = 6 * E * I / L**2
-    Ktiuj = 0
-    Ktivj = -12 * E * I / L**3
-    Ktirj = 6 * E * I / L**2
+    # ##########################################################################
+    match (ri, rj):
+        case (False, False):
+            # reazioni trasversali sul nodo i
+            Ktiui = 0
+            Ktivi = 12 * E * I / L**3  # dovuto alla traslazione trasversale del nodo i
+            Ktiri = 6 * E * I / L**2  # dovuto alla rotazione del nodo i
+            Ktiuj = 0
+            Ktivj = -12 * E * I / L**3  # dovuto alla traslazione trasversale del nodo j
+            Ktirj = 6 * E * I / L**2  # dovuto alla rotazione del nodo j
+        case (True, True):
+            # reazioni trasversali sul nodo i
+            Ktiui = 0
+            Ktivi = 0  # dovuto alla traslazione trasversale del nodo i
+            Ktiri = 0  # dovuto alla rotazione del nodo i
+            Ktiuj = 0
+            Ktivj = 0  # dovuto alla traslazione trasversale del nodo j
+            Ktirj = 0  # dovuto alla rotazione del nodo j
+        case (True, False):
+            # reazioni trasversali sul nodo i
+            Ktiui = 0
+            Ktivi = 3 * E * I / L**3  # dovuto alla traslazione trasversale del nodo i
+            Ktiri = 0  # dovuto alla rotazione del nodo i
+            Ktiuj = 0
+            Ktivj = -3 * E * I / L**3  # dovuto alla traslazione trasversale del nodo j
+            Ktirj = 3 * E * I / L**2  # dovuto alla rotazione del nodo j
+        case (False, True):
+            # reazioni trasversali sul nodo i
+            Ktiui = 0
+            Ktivi = 3 * E * I / L**3  # dovuto alla traslazione trasversale del nodo i
+            Ktiri = 3 * E * I / L**2  # dovuto alla rotazione del nodo i
+            Ktiuj = 0
+            Ktivj = -3 * E * I / L**3  # dovuto alla traslazione trasversale del nodo j
+            Ktirj = 0  # dovuto alla rotazione del nodo j
 
-    Kmiui = 0
-    Kmivi = 6 * E * I / L**2
-    Kmiri = 4 * E * I / L
-    Kmiuj = 0
-    Kmivj = -6 * E * I / L**2
-    Kmirj = 2 * E * I / L
+    # ##########################################################################
+    match (ri, rj):
+        case (False, False):
+            # momenti flettenti sul nodo i
+            Kmiui = 0
+            Kmivi = 6 * E * I / L**2  # dovuto alla traslazione trasversale del nodo i
+            Kmiri = 4 * E * I / L  # dovuto alla rotazione del nodo i
+            Kmiuj = 0
+            Kmivj = -6 * E * I / L**2  # dovuto alla traslazione trasversale del nodo j
+            Kmirj = 2 * E * I / L  # dovuto alla rotazione del nodo j
+        case (True, True):
+            # momenti flettenti sul nodo i
+            Kmiui = 0
+            Kmivi = 0  # dovuto alla traslazione trasversale del nodo i
+            Kmiri = 0  # dovuto alla rotazione del nodo i
+            Kmiuj = 0
+            Kmivj = 0  # dovuto alla traslazione trasversale del nodo j
+            Kmirj = 0  # dovuto alla rotazione del nodo j
+        case (True, False):
+            # momenti flettenti sul nodo i
+            Kmiui = 0
+            Kmivi = 0  # dovuto alla traslazione trasversale del nodo i
+            Kmiri = 0  # dovuto alla rotazione del nodo i
+            Kmiuj = 0
+            Kmivj = 0  # dovuto alla traslazione trasversale del nodo j
+            Kmirj = 0  # dovuto alla rotazione del nodo j
+        case (False, True):
+            # momenti flettenti sul nodo i
+            Kmiui = 0
+            Kmivi = 3 * E * I / L**2  # dovuto alla traslazione trasversale del nodo i
+            Kmiri = 3 * E * I / L  # dovuto alla rotazione del nodo i
+            Kmiuj = 0
+            Kmivj = -3 * E * I / L**2  # dovuto alla traslazione trasversale del nodo j
+            Kmirj = 0  # dovuto alla rotazione del nodo j
 
-    Knjui = -E * A / L
+    # ##########################################################################
+    # reazioni assiali sul nodo j
+    Knjui = -E * A / L  # dovuto allo spostamento assiale del nodo i
     Knjvi = 0
     Knjri = 0
-    Knjuj = E * A / L
+    Knjuj = E * A / L  # dovuto allo spostamento assiale del nodo j
     Knjvj = 0
     Knjrj = 0
 
-    Ktjui = 0
-    Ktjvi = -12 * E * I / L**3
-    Ktjri = -6 * E * I / L**2
-    Ktjuj = 0
-    Ktjvj = 12 * E * I / L**3
-    Ktjrj = -6 * E * I / L**2
+    # ##########################################################################
+    match (ri, rj):
+        case (False, False):
+            # reazioni trasversali sul nodo j
+            Ktjui = 0
+            Ktjvi = -12 * E * I / L**3  # dovuto alla traslazione trasversale del nodo i
+            Ktjri = -6 * E * I / L**2  # dovuto alla rotazione del nodo i
+            Ktjuj = 0
+            Ktjvj = 12 * E * I / L**3  # dovuto alla traslazione trasversale del nodo j
+            Ktjrj = -6 * E * I / L**2  # dovuto alla rotazione del nodo j
+        case (True, True):
+            # reazioni trasversali sul nodo j
+            Ktjui = 0
+            Ktjvi = 0  # dovuto alla traslazione trasversale del nodo i
+            Ktjri = 0  # dovuto alla rotazione del nodo i
+            Ktjuj = 0
+            Ktjvj = 0  # dovuto alla traslazione trasversale del nodo j
+            Ktjrj = 0  # dovuto alla rotazione del nodo j
+        case (True, False):
+            # reazioni trasversali sul nodo j
+            Ktjui = 0
+            Ktjvi = -3 * E * I / L**3  # dovuto alla traslazione trasversale del nodo i
+            Ktjri = 0  # dovuto alla rotazione del nodo i
+            Ktjuj = 0
+            Ktjvj = 3 * E * I / L**3  # dovuto alla traslazione trasversale del nodo j
+            Ktjrj = -3 * E * I / L**2  # dovuto alla rotazione del nodo j
+        case (False, True):
+            # reazioni trasversali sul nodo j
+            Ktjui = 0
+            Ktjvi = -3 * E * I / L**3  # dovuto alla traslazione trasversale del nodo i
+            Ktjri = -3 * E * I / L**2  # dovuto alla rotazione del nodo i
+            Ktjuj = 0
+            Ktjvj = 3 * E * I / L**3  # dovuto alla traslazione trasversale del nodo j
+            Ktjrj = 0  # dovuto alla rotazione del nodo j
 
-    Kmjui = 0
-    Kmjvi = 6 * E * I / L**2
-    Kmjri = 2 * E * I / L
-    Kmjuj = 0
-    Kmjvj = -6 * E * I / L**2
-    Kmjrj = 4 * E * I / L
+    # ##########################################################################
+    match (ri, rj):
+        case (False, False):
+            # momenti flettenti sul nodo j
+            Kmjui = 0
+            Kmjvi = 6 * E * I / L**2  # dovuto alla traslazione trasversale del nodo i
+            Kmjri = 2 * E * I / L  # dovuto alla rotazione del nodo i
+            Kmjuj = 0
+            Kmjvj = -6 * E * I / L**2  # dovuto alla traslazione trasversale del nodo j
+            Kmjrj = 4 * E * I / L  # dovuto alla rotazione del nodo j
+        case (True, True):
+            # momenti flettenti sul nodo j
+            Kmjui = 0
+            Kmjvi = 0  # dovuto alla traslazione trasversale del nodo i
+            Kmjri = 0  # dovuto alla rotazione del nodo i
+            Kmjuj = 0
+            Kmjvj = 0  # dovuto alla traslazione trasversale del nodo j
+            Kmjrj = 0  # dovuto alla rotazione del nodo j
+        case (True, False):
+            # momenti flettenti sul nodo j
+            Kmjui = 0
+            Kmjvi = 3 * E * I / L**2  # dovuto alla traslazione trasversale del nodo i
+            Kmjri = 0  # dovuto alla rotazione del nodo i
+            Kmjuj = 0
+            Kmjvj = -3 * E * I / L**2  # dovuto alla traslazione trasversale del nodo j
+            Kmjrj = 3 * E * I / L  # dovuto alla rotazione del nodo j
+        case (False, True):
+            # momenti flettenti sul nodo j
+            Kmjui = 0
+            Kmjvi = 0  # dovuto alla traslazione trasversale del nodo i
+            Kmjri = 0  # dovuto alla rotazione del nodo i
+            Kmjuj = 0
+            Kmjvj = 0  # dovuto alla traslazione trasversale del nodo j
+            Kmjrj = 0  # dovuto alla rotazione del nodo j
+
+    # ##########################################################################
 
     stiffness_matrix = np.array(
         [
@@ -89,8 +210,10 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray
     )
 
     # arrotodamento a 3 decimali
-    # stiffness_matrix = np.round(stiffness_matrix, 3)
-
+    stiffness_matrix = np.round(stiffness_matrix, 0)
+    np.set_printoptions(precision=1, suppress=True)
+    print("stiffness matrix:")
+    print(stiffness_matrix)
     return stiffness_matrix
 
     #     [EA/L,      0,              0,          -EA/L,      0,              0],
@@ -99,7 +222,13 @@ def generate_stiffness_matrix_2d(E: int, A: int, I: int, L: float) -> np.ndarray
     #     [-EA/L,     0,              0,          EA/L,       0,              0],
     #     [0,         -12EI/L**3,     -6EI/L**2,  0,          12EI/L**3,      -6EI/L**2],
     #     [0          6EI/L**2,       2EI/L,      0,          -6EI/L**2,      4EI/L]
-    # ]
+
+    #     [EA/L,      0,              0,          -EA/L,      0,              0],
+    #     [0,         12EI/L**3,      6EI/L**2,   0,          -12EI/L**3,     6EI/L**2],
+    #     [0,         6EI/L**2,       4EI/L,      0,          -6EI/L**2,      2EI/L],
+    #     [-EA/L,     0,              0,          EA/L,       0,              0],
+    #     [0,         -12EI/L**3,     -6EI/L**2,  0,          12EI/L**3,      -6EI/L**2],
+    #     [0          6EI/L**2,       2EI/L,      0,          -6EI/L**2,      4EI/L]
 
 
 # #############################################################################
