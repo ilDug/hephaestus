@@ -153,7 +153,7 @@ Note:
     example: 
     [X X -] is a hinge
     [- - -] is a free node
-    [X - X] is a horizontal roller
+    [- X -] is a vertical support (horizontal roller)
     [X X X] is a fixed support
     [- - X] is guided support without rotation
 
