@@ -34,6 +34,48 @@ Il secondo pedice rappresenta quale spostamento genera l'azione precedentemente 
 
 Ad esempio,  il termine $K_{T_ir_j}$ rappresenta la reazione vincolare `T` (forza trasversale) che si genera in corrispondenza del nodo `i`  a seguito di uno di una rotazione `r` del nodo `j`.
 
+### 1.1 - matrice delle rigidezze locali per un'asta **INCASTRO-INCASTRO**
+
+$
+\mathbf[K_{\times-\times}] =
+\begin{bmatrix}
+\frac{EA}{L} & \, & 0 & \, & 0 & \, & -\frac{EA}{L} & \, & 0 & \, & 0 \\[10pt]
+0 & \, & \frac{12EI}{L^3} & \, & \frac{6EI}{L^2} & \, & 0 & \, & -\frac{12EI}{L^3} & \, & \frac{6EI}{L^2} \\[10pt]
+0 & \, & \frac{6EI}{L^2} & \, & \frac{4EI}{L} & \, & 0 & \, & -\frac{6EI}{L^2} & \, & \frac{2EI}{L} \\[10pt]
+-\frac{EA}{L} & \, & 0 & \, & 0 & \, & \frac{EA}{L} & \, & 0 & \, & 0 \\[10pt]
+0 & \, & -\frac{12EI}{L^3} & \, & -\frac{6EI}{L^2} & \, & 0 & \, & \frac{12EI}{L^3} & \, & -\frac{6EI}{L^2} \\[10pt]
+0 & \, & \frac{6EI}{L^2} & \, & \frac{2EI}{L} & \, & 0 & \, & -\frac{6EI}{L^2} & \, & \frac{4EI}{L}
+\end{bmatrix}
+$
+
+### 1.2 - matrice delle rigidezze locali per un'asta **CERNIERA-INCASTRO**
+
+$
+\mathbf[K_{\odot-\times}] =
+\begin{bmatrix}
+\frac{EA}{L} & \, & 0 & \, & 0 & \, & -\frac{EA}{L} & \, & 0 & \, & 0 \\[10pt]
+0 & \, & \frac{3EI}{L^3} & \, & 0 & \, & 0 & \, & -\frac{3EI}{L^3} & \, & \frac{3EI}{L^2} \\[10pt]
+0 & \, & 0 & \, & 0 & \, & 0 & \, & 0 & \, & 0 \\[10pt]
+-\frac{EA}{L} & \, & 0 & \, & 0 & \, & \frac{EA}{L} & \, & 0 & \, & 0 \\[10pt]
+0 & \, & -\frac{3EI}{L^3} & \, & 0 & \, & 0 & \, & \frac{3EI}{L^3} & \, & -\frac{3EI}{L^2} \\[10pt]
+0 & \, & \frac{3EI}{L^2} & \, & 0 & \, & 0 & \, & -\frac{3EI}{L^2} & \, & \frac{3EI}{L}
+\end{bmatrix}
+$
+
+### 1.3 - matrice delle rigidezze locali per un'asta **INCASTRO-CERNIERA**
+
+$
+\mathbf[K_{\times-\odot}] =
+\begin{bmatrix}
+\frac{EA}{L} & \, & 0 & \, & 0 & \, & -\frac{EA}{L} & \, & 0 & \, & 0 \\[10pt]
+0 & \, & \frac{3EI}{L^3} & \, & \frac{3EI}{L^2} & \, & 0 & \, & -\frac{3EI}{L^3} & \, & 0 \\[10pt]
+0 & \, & \frac{3EI}{L^2} & \, & \frac{3EI}{L} & \, & 0 & \, & -\frac{3EI}{L^2} & \, & 0 \\[10pt]
+-\frac{EA}{L} & \, & 0 & \, & 0 & \, & \frac{EA}{L} & \, & 0 & \, & 0 \\[10pt]
+0 & \, & -\frac{3EI}{L^3} & \, & -\frac{3EI}{L^2} & \, & 0 & \, & \frac{3EI}{L^3} & \, & 0 \\[10pt]
+0 & \, & 0 & \, & 0 & \, & 0 & \, & 0 & \, & 0 
+\end{bmatrix}
+$
+
 ## 2 - matrice di trasformazione
 
 La matrice di trasformazione `R` è una matrice quadrata 6x6 che permette di passare dalla matrice delle rigidezze locali alla matrice delle rigidezze globali. Essa è definita come:
@@ -47,11 +89,4 @@ $
 $
 
 
-```
-            
-            |                                           |
- Ni Ti Mi   |———————————————————————————————————————————|   Nj Tj Mj
-            |                                           |
-                                         
-
-```
+## 3 - matrice delle rigidezze globali
