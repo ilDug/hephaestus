@@ -2,12 +2,14 @@ from typing import Annotated
 import numpy as np
 from .node import Node
 from ..matrix import generate_stiffness_matrix_2d, generate_rotation_matrix_2d
-
+from ..materials import Material
 
 class Beam:
     id: str  # identificativo della trave
+    material: Material  # materiale della trave
     Ix: int  # momento d'inerzia in mm4 lungo l'asse x
     Iy: int  # momento d'inerzia in mm4 lungo l'asse y
+
     E: int  # modulo di elasticità in MPa (acciaio = 210000 MPa, N/mm2)
     A: int  # sezione della trave in mm2
     L: float  # lunghezza della trave in mm
@@ -26,10 +28,12 @@ class Beam:
         self.id = f"{self.i.id}-{self.j.id}"
         print(f"the length of the beam `{self.id}` is {self.L}mm")
 
-    def set_material(self, E: int) -> "Beam":
-        """imposta il modulo di elasticità del materiale della trave.
-        Valore in N/mm2 o MPa: acciacio = 210000"""
-        self.E = E
+    def set_material(self, material: Material) -> "Beam":
+        """imposta il materiale della trave"""
+        if not isinstance(material, Material):
+            raise TypeError("The parameter 'material' must be an instance of Material.")
+        self.material = material
+        self.E = material.get("E")
         return self
 
     def set_section(self, A: int, Ix: int, Iy: int) -> "Beam":

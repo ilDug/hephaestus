@@ -1,9 +1,8 @@
-from core.objects import Node, Beam, Frame
-import numpy as np
-from fractions import Fraction
+from core.objects import Frame
+from core.materials import STEELS, Material
 
 # proprietà della trave: materiale e sezione
-E = 210000
+
 Ix = 3492000  # mm4 HEA100
 A = 2124  # mm2 HEA100
 
@@ -19,11 +18,11 @@ b1 = frame.add_beam(n1, n2)
 b2 = frame.add_beam(n2, n3)
 # b3 = frame.add_beam(n4, n3)
 
-b1.set_internal_releases(i=True, j=True)
+# b1.set_internal_releases(i=True, j=True)
 # b2.set_internal_releases(i=True, j=True)
 
 for beam in frame.beams:
-    beam.set_material(E).set_section(A, Ix, Ix)
+    beam.set_material(STEELS.get("S235")).set_section(A, Ix, Ix)
 
 
 frame.node(n1).set_restraints(True, True, True)
