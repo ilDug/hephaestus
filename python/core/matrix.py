@@ -61,14 +61,6 @@ def generate_stiffness_matrix_2d(
     #     [0,         -12EI/L**3,     -6EI/L**2,  0,          12EI/L**3,      -6EI/L**2],
     #     [0          6EI/L**2,       2EI/L,      0,          -6EI/L**2,      4EI/L]
 
-    #     [EA/L,      0,              0,          -EA/L,      0,              0],
-    #     [0,         x,              x,          0,          X,              x],
-    #     [0,         6EI/L**2,       4EI/L,      0,          -6EI/L**2,      2EI/L],
-    #     [-EA/L,     0,              0,          EA/L,       0,              0],
-    #     [0,         -12EI/L**3,     -6EI/L**2,  0,          12EI/L**3,      -6EI/L**2],
-    #     [0          6EI/L**2,       2EI/L,      0,          -6EI/L**2,      4EI/L]
-
-
 # #############################################################################
 
 
@@ -211,20 +203,20 @@ def stiffness_matrix_2d_fixed_hinged_beam(
     # ##########################################################################
     # reazioni dovute allo traslazione trasverale del nodo i
     Knivi = 0
-    Ktivi = None  # diagonale
-    Kmivi = None
+    Ktivi = 3 * E * I / L**3  # diagonale
+    Kmivi = 3 * E * I / L**2
     Knjvi = 0
-    Ktjvi = None
-    Kmjvi = None
+    Ktjvi = -3 * E * I / L**3
+    Kmjvi = 0
 
     # ##########################################################################
     # reazioni dovute alla rotazione del nodo i
     Kniri = 0
-    Ktiri = None
-    Kmiri = None  # diagonale
+    Ktiri = 3 * E * I / L**2
+    Kmiri = 3 * E * I / L  # diagonale
     Knjri = 0
-    Ktjri = None
-    Kmjri = None
+    Ktjri = -3 * E * I / L**2
+    Kmjri = 0
 
     # ##########################################################################
     # reazioni dovute allo spostamento assiale del nodo j
@@ -238,20 +230,20 @@ def stiffness_matrix_2d_fixed_hinged_beam(
     # ##########################################################################
     # reazioni dovute alla traslazione trasversale del nodo j
     Knivj = 0
-    Ktivj = None
-    Kmivj = None
+    Ktivj = -3 * E * I / L**3
+    Kmivj = -3 * E * I / L**2
     Knjvj = 0
-    Ktjvj = None  # diagonale
-    Kmjvj = None
+    Ktjvj = 3 * E * I / L**3  # diagonale
+    Kmjvj = 0
 
     # ##########################################################################
     # reazioni dovute alla rotazione del nodo j
     Knirj = 0
-    Ktirj = None
-    Kmirj = None
+    Ktirj = 0
+    Kmirj = 0
     Knjrj = 0
-    Ktjrj = None
-    Kmjrj = None  # diagonale
+    Ktjrj = 0
+    Kmjrj = 0  # diagonale
 
     stiffness_matrix = np.array(
         [
@@ -292,20 +284,20 @@ def stiffness_matrix_2d_hinged_fixed_beam(
     # ##########################################################################
     # reazioni dovute allo traslazione trasverale del nodo i
     Knivi = 0
-    Ktivi = None  # diagonale
-    Kmivi = None
+    Ktivi = 3 * E * I / L**3  # diagonale
+    Kmivi = 0
     Knjvi = 0
-    Ktjvi = None
-    Kmjvi = None
+    Ktjvi = -3 * E * I / L**3
+    Kmjvi = 3 * E * I / L**2
 
     # ##########################################################################
     # reazioni dovute alla rotazione del nodo i
     Kniri = 0
-    Ktiri = None
-    Kmiri = None  # diagonale
+    Ktiri = 0
+    Kmiri = 0  # diagonale
     Knjri = 0
-    Ktjri = None
-    Kmjri = None
+    Ktjri = 0
+    Kmjri = 0
 
     # ##########################################################################
     # reazioni dovute allo spostamento assiale del nodo j
@@ -319,20 +311,20 @@ def stiffness_matrix_2d_hinged_fixed_beam(
     # ##########################################################################
     # reazioni dovute alla traslazione trasversale del nodo j
     Knivj = 0
-    Ktivj = None
-    Kmivj = None
+    Ktivj = -3 * E * I / L**3
+    Kmivj = 0
     Knjvj = 0
-    Ktjvj = None  # diagonale
-    Kmjvj = None
+    Ktjvj = 3 * E * I / L**3  # diagonale
+    Kmjvj = -3 * E * I / L**2
 
     # ##########################################################################
     # reazioni dovute alla rotazione del nodo j
     Knirj = 0
-    Ktirj = None
-    Kmirj = None
+    Ktirj = 3 * E * I / L**2
+    Kmirj = 0
     Knjrj = 0
-    Ktjrj = None
-    Kmjrj = None  # diagonale
+    Ktjrj = -3 * E * I / L**2
+    Kmjrj = 3 * E * I / L  # diagonale
 
     stiffness_matrix = np.array(
         [
