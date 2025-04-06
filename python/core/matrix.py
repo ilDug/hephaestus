@@ -2,7 +2,7 @@ import numpy as np
 
 
 def generate_stiffness_matrix_2d(
-    E: int, A: int, I: int, L: float, rel_i: bool = True, rel_j: bool = False
+    E: int, A: int, I: int, L: float, rel_i: bool = False, rel_j: bool = False
 ) -> np.ndarray:
     """
     Generates the stiffness matrix for a beam element based on its material
@@ -37,16 +37,19 @@ def generate_stiffness_matrix_2d(
     if None in [E, A, I, L]:
         raise ValueError("Some properties of the beam are not set")
 
-    stiffness_matrix = np.array()
     match (rel_i, rel_j):
         case (False, False):
+            print("generating stiffness matrix for fixed-fixed beam")
             stiffness_matrix = stiffness_matrix_2d_fixed_fixed_beam(E, A, I, L)
         case (True, False):
-            stiffnessmatrix = None
+            print("generating stiffness matrix for fixed-hinged beam")
+            stiffness_matrix = stiffness_matrix_2d_hinged_fixed_beam(E, A, I, L)
         case (False, True):
-            stiffnessmatrix = None
+            print("generating stiffness matrix for hinged-fixed beam")
+            stiffness_matrix = stiffness_matrix_2d_fixed_hinged_beam(E, A, I, L)
         case (True, True):
-            stiffnessmatrix = None
+            print("generating stiffness matrix for hinged-hinged beam")
+            stiffness_matrix = stiffness_matrix_2d_hinged_hinged_beam(E, A, I, L)
 
     # arrotodamento a 3 decimali
     # stiffness_matrix = np.round(stiffness_matrix, 3)
@@ -60,6 +63,7 @@ def generate_stiffness_matrix_2d(
     #     [-EA/L,     0,              0,          EA/L,       0,              0],
     #     [0,         -12EI/L**3,     -6EI/L**2,  0,          12EI/L**3,      -6EI/L**2],
     #     [0          6EI/L**2,       2EI/L,      0,          -6EI/L**2,      4EI/L]
+
 
 # #############################################################################
 
