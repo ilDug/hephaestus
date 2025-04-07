@@ -1,5 +1,5 @@
 from core.objects import Frame
-from core.materials import STEELS, Material
+from core.materials import S235
 
 # proprietà della trave: materiale e sezione
 
@@ -22,7 +22,7 @@ b2 = frame.add_beam(n2, n3)
 # b2.set_internal_releases(i=True, j=True)
 
 for beam in frame.beams:
-    beam.set_material(STEELS.get("S235")).set_section(A, Ix, Ix)
+    beam.set_material(S235()).set_section(A, Ix, Ix)
 
 
 frame.node(n1).set_restraints(True, True, True)

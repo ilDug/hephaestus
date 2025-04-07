@@ -30,10 +30,7 @@ class Beam:
 
     def set_material(self, material: Material) -> "Beam":
         """imposta il materiale della trave"""
-        if not isinstance(material, Material):
-            raise TypeError("The parameter 'material' must be an instance of Material.")
         self.material = material
-        self.E = material.get("E")
         return self
 
     def set_section(self, A: int, Ix: int, Iy: int) -> "Beam":
@@ -72,8 +69,10 @@ class Beam:
     def stiffness_matrix_local(self) -> np.ndarray:
         """genera la matrice di rigidezza locale della trave"""
         try:
+            # calcola la matrice di rigidezza locale della trave
+            # usando le proprietà della sezione e del materiale
             K = generate_stiffness_matrix_2d(
-                self.E, self.A, self.Ix, self.L, self.i_release, self.j_release
+                self.material.E, self.A, self.Ix, self.L, self.i_release, self.j_release
             )
             return K
         except Exception as e:
