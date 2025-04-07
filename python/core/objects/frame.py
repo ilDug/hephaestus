@@ -60,19 +60,23 @@ class Frame:
         # initialize the global stiffness matrix with zeros
         K = np.zeros((n, n))
 
-        # add the stiffness matrix of each beam to the global stiffness matrix
-        for beam in self.beams:
-            i = (beam.i.id - 1) * 3
-            j = (beam.j.id - 1) * 3
+        try:
+            # add the stiffness matrix of each beam to the global stiffness matrix
+            for beam in self.beams:
+                i = (beam.i.id - 1) * 3
+                j = (beam.j.id - 1) * 3
 
-            # add the stiffness matrix of the beam to the global stiffness matrix
-            k_local = beam.stiffness_matrix()
+                # add the stiffness matrix of the beam to the global stiffness matrix
+                k_local = beam.stiffness_matrix()
 
-            K[i : i + 3, i : i + 3] += k_local[:3, :3]  # primo quadrante
-            K[j : j + 3, j : j + 3] += k_local[3:, 3:]  # quarto quadrante
-            K[i : i + 3, j : j + 3] += k_local[:3, 3:]  # secondo quadrante
-            K[j : j + 3, i : i + 3] += k_local[3:, :3]  # terzo quadrante
-        return K
+                K[i : i + 3, i : i + 3] += k_local[:3, :3]  # primo quadrante
+                K[j : j + 3, j : j + 3] += k_local[3:, 3:]  # quarto quadrante
+                K[i : i + 3, j : j + 3] += k_local[:3, 3:]  # secondo quadrante
+                K[j : j + 3, i : i + 3] += k_local[3:, :3]  # terzo quadrante
+            return K
+        except Exception as e:
+            print(f"FRAME CLASS: Error in global stiffness matrix: {e}")
+            raise ValueError(f"Error in global stiffness matrix: {e}")
 
     def displacemets(self) -> np.ndarray:
         """Returns the displacements vector for the frame"""
