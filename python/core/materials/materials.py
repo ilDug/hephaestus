@@ -5,19 +5,20 @@ from dataclasses import dataclass
 # @dataclass
 class Material(Protocol):
     """
-        MAterial Base class
-        Attributes:
-            name (str): Name of the material.
-            rho (float): Density of the material in kg/m^3.
-            E (int): Young's modulus in MPa.
-            nu (float): Poisson's ratio.
-            G (int): Shear modulus in MPa.
-            alpha (float): Thermal expansion coefficient in 1/K.
-            k (float): Thermal conductivity in W/(m·K).
-            cp (float): Specific heat capacity in J/(kg·K).
-            fy (int): Yield strength in MPa.
-            fu (int): Ultimate strength in MPa.
+    MAterial Base class
+    Attributes:
+        name (str): Name of the material.
+        rho (float): Density of the material in kg/m^3.
+        E (int): Young's modulus in MPa.
+        nu (float): Poisson's ratio.
+        G (int): Shear modulus in MPa.
+        alpha (float): Thermal expansion coefficient in 1/K.
+        k (float): Thermal conductivity in W/(m·K).
+        cp (float): Specific heat capacity in J/(kg·K).
+        fy (int): Yield strength in MPa.
+        fu (int): Ultimate strength in MPa.
     """
+
     name: str  # name of the material
     """name of the material"""
     group: str  # group of the material
