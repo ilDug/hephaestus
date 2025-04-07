@@ -1,4 +1,4 @@
-from core.objects import Frame
+from core.elements import Frame
 from core.materials import S235
 
 # proprietà della trave: materiale e sezione

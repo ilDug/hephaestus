@@ -1,4 +1,4 @@
-from core.objects import Node, Beam, Frame
+from core.elements import Node, Beam, Frame
 import numpy as np
 from fractions import Fraction
 
