@@ -4,6 +4,7 @@ from .node import Node
 from ..matrix import generate_stiffness_matrix_2d, generate_rotation_matrix_2d
 from ..materials import Material
 
+
 class Beam:
     id: str  # identificativo della trave
     material: Material  # materiale della trave
