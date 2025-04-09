@@ -2,7 +2,7 @@ import numpy as np
 
 
 def generate_stiffness_matrix_2d(
-    E: int, A: int, I: int, L: float, rel_i: bool = False, rel_j: bool = False
+    E: int, A: int, I: int, L: float, releases: tuple[bool, bool] = (False, False)
 ) -> np.ndarray:
     """
     Generates the stiffness matrix for a beam element based on its material
@@ -37,7 +37,7 @@ def generate_stiffness_matrix_2d(
     if None in [E, A, I, L]:
         raise ValueError("Some properties of the beam are not set")
 
-    match (rel_i, rel_j):
+    match releases:
         case (False, False):
             print("generating stiffness matrix for fixed-fixed beam")
             stiffness_matrix = stiffness_matrix_2d_fixed_fixed_beam(E, A, I, L)

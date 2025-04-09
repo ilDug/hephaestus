@@ -178,8 +178,8 @@ Note:
     - rz = Rotation around the z-axis
         """
 
-        table = PrettyTable()
-        table.field_names = [
+        node_report_table = PrettyTable()
+        node_report_table.field_names = [
             "Node",
             "Coordinates",
             "Restraints",
@@ -193,6 +193,35 @@ Note:
             "dy",
             "rz",
         ]
-        table.add_rows(X.tolist())
+        node_report_table.add_rows(X.tolist())
 
-        return note + "\n" + table.get_string()
+        releases_ = lambda rel: f"{'O' if rel[0] else '-'} {'O' if rel[1] else '-'}"
+
+        beam_report_table = PrettyTable()
+        beam_report_table.field_names = [
+            "Beam",
+            "Length",
+            "Material",
+            "Section",
+            "Side",
+            "Releases",
+        ]
+        for beam in self.beams:
+            beam_report_table.add_row(
+                [
+                    beam.id,
+                    beam.L,
+                    beam.material.name,
+                    beam.section.profile,
+                    beam.side,
+                    releases_(beam.releases),
+                ]
+            )
+
+        return (
+            note
+            + "\n"
+            + node_report_table.get_string()
+            + "\n"
+            + beam_report_table.get_string()
+        )
