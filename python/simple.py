@@ -1,6 +1,6 @@
 from core.elements import Frame
 from core.materials import S235
-from core.sections.section_db import HEA_Sections
+from core.sections.section_db import secs
 
 # proprietà della trave: materiale e sezione
 
@@ -30,22 +30,7 @@ A = 2124  # mm2 HEA100
 
 # print(frame.generate_node_report()
 #
-for s in HEA_Sections:
-    s.Iy = s.Iy * 1000000
-    s.Wely = s.Wely * 1000
-    s.Welz = s.Welz * 1000
-    s.Wply = s.Wply * 1000
-    s.Wplz = s.Wplz * 1000
-    s.J = s.J * 1000
-    s.Cw = s.Cw * 1000000
 
-    s.Iy = int(s.Iy)
-    s.Wely = int(s.Wely)
-    s.Welz = int(s.Welz)
-    s.Wply = int(s.Wply)
-    s.Wplz = int(s.Wplz)
-    s.J = int(s.J)
-    s.Cw = int(s.Cw)
 
-for s in HEA_Sections:
+for s in secs:
     print(s.model_dump_json())

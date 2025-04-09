@@ -16,9 +16,9 @@ class Section(BaseModel):
     """height of the section in mm"""
     b: int
     """width of the section in mm"""
-    tw: int
+    tw: float
     """spessore dell'anima in mm"""
-    tf: int
+    tf: float
     """spessore delle flange/ali in mm"""
     r: int
     """raggio di raccordo in mm"""
@@ -30,18 +30,18 @@ class Section(BaseModel):
     """moment of inertia of the section in mm^4 along main axis"""
     iy: float
     """radius of gyration of the section in mm along main axis"""
-    Wely: float
+    Wely: int
     """Elastic section modulus of the section in mm^3 along main axis"""
-    Wply: float
+    Wply: int
     """Plastic section modulus of the section in mm^3 along main axis"""
 
     Iz: int
     """moment of inertia of the section in mm^4 along the trasverse axis"""
     iz: float
     """radius of gyration of the section in mm along the trasverse axis"""
-    Welz: float
+    Welz: int
     """Elastic section modulus of the section in mm^3 along the trasverse axis"""
-    Wplz: float
+    Wplz: int
     """Plastic section modulus of the section in mm^3 along the trasverse axis"""
 
     J: int
