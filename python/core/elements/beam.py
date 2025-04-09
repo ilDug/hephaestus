@@ -20,10 +20,8 @@ class Beam:
     j: Node
     """il nodo finale della trave"""
 
-    i_release: bool = False
-    """rilascio del nodo iniziale"""
-    j_release: bool = False
-    """rilascio del nodo finale"""
+    releases: tuple[bool, bool] = (False, False)
+    """rilascio interni della trave"""
 
     L: float
     """lunghezza della trave in mm"""
@@ -51,8 +49,7 @@ class Beam:
 
     def set_internal_releases(self, i: bool = False, j: bool = False) -> "Beam":
         """imposta i rilasci interni della trave"""
-        self.i_release = i
-        self.j_release = j
+        self.releases = (i, j)
         return self
 
     def set_side(self, side: Literal["MAJOR", "MINOR"]) -> "Beam":
@@ -92,8 +89,7 @@ class Beam:
                 self.section.A,
                 inertial_momentum,
                 self.L,
-                self.i_release,
-                self.j_release,
+                self.releases,
             )
             return K
         except Exception as e:
