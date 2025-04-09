@@ -13,7 +13,7 @@ n1 = frame.add_node((0, 0))
 n2 = frame.add_node((500, 0))
 n3 = frame.add_node((1000, 0))
 
-b1 = frame.add_beam(n1, n2).set_material(m1).set_section(s1)
+b1 = frame.add_beam(n1, n2).set_material(m1).set_section(s1).set_side("MINOR")
 b2 = frame.add_beam(n2, n3).set_material(m1).set_section(s1)
 
 
