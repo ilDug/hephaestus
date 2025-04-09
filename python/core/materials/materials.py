@@ -81,6 +81,8 @@ class Steel:
 
 
 class S235(Steel):
+    name: str = "S235"
+    """name of the steel"""
     fy: float = 235  # yield strength [MPa]
     """yield strength [MPa]"""
     fu: float = 360  # ultimate strength [MPa]
@@ -88,6 +90,8 @@ class S235(Steel):
 
 
 class S275(Steel):
+    name: str = "S275"
+    """name of the steel"""
     fy: float = 275  # yield strength [MPa]
     """yield strength [MPa]"""
     fu: float = 430  # ultimate strength [MPa]
@@ -95,6 +99,8 @@ class S275(Steel):
 
 
 class S355(Steel):
+    name: str = "S355"
+    """name of the steel"""
     fy: float = 355  # yield strength [MPa]
     """yield strength [MPa]"""
     fu: float = 490  # ultimate strength [MPa]
@@ -102,6 +108,8 @@ class S355(Steel):
 
 
 class S450(Steel):
+    name: str = "S450"
+    """name of the steel"""
     fy: float = 440  # yield strength [MPa]
     """yield strength [MPa]"""
     fu: float = 550  # ultimate strength [MPa]

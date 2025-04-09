@@ -3,23 +3,30 @@ import numpy as np
 from .node import Node
 from ..matrix import generate_stiffness_matrix_2d, generate_rotation_matrix_2d
 from ..materials import Material
+from ..sections import Section
 
 
 class Beam:
-    id: str  # identificativo della trave
-    material: Material  # materiale della trave
-    Ix: int  # momento d'inerzia in mm4 lungo l'asse x
-    Iy: int  # momento d'inerzia in mm4 lungo l'asse y
+    id: str
+    """identficativo della trave"""
 
-    E: int  # modulo di elasticità in MPa (acciaio = 210000 MPa, N/mm2)
-    A: int  # sezione della trave in mm2
-    L: float  # lunghezza della trave in mm
+    material: Material
+    """materiale della trave"""
+    section: Section
+    """sezione della trave"""
 
-    i: Node  # il nodo iniziale
-    j: Node  # il nodo finale
+    i: Node
+    """il nodo iniziale della trave"""
+    j: Node
+    """il nodo finale della trave"""
 
-    i_release: bool = False  # rilascio del nodo iniziale
-    j_release: bool = False  # rilascio del nodo finale
+    i_release: bool = False
+    """rilascio del nodo iniziale"""
+    j_release: bool = False
+    """rilascio del nodo finale"""
+
+    L: float
+    """lunghezza della trave in mm"""
 
     def __init__(self, start: Node, end: Node):
         """crea una nuova trave tra due nodi"""
@@ -34,14 +41,9 @@ class Beam:
         self.material = material
         return self
 
-    def set_section(self, A: int, Ix: int, Iy: int) -> "Beam":
-        """ "imposta le proprietà della sezione trasversale della trave.
-        A = area della sezione in mm2,
-        Ix = momento d'inerzia in mm4 lungo l'asse x,
-        Iy = momento d'inerzia in mm4 lungo l'asse y"""
-        self.A = A
-        self.Ix = Ix
-        self.Iy = Iy
+    def set_section(self, section: Section) -> "Beam":
+        """ "imposta le proprietà della sezione trasversale della trave"""
+        self.section = section
         return self
 
     def set_internal_releases(self, i: bool = False, j: bool = False) -> "Beam":
@@ -73,7 +75,12 @@ class Beam:
             # calcola la matrice di rigidezza locale della trave
             # usando le proprietà della sezione e del materiale
             K = generate_stiffness_matrix_2d(
-                self.material.E, self.A, self.Ix, self.L, self.i_release, self.j_release
+                self.material.E,
+                self.section.A,
+                self.section.Iy,
+                self.L,
+                self.i_release,
+                self.j_release,
             )
             return K
         except Exception as e:
