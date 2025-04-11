@@ -2,7 +2,7 @@ from .beam import Beam
 from .node import Node
 import numpy as np
 from numpy.dtypes import StringDType
-from prettytable import PrettyTable
+from prettytable import PrettyTable, TableStyle
 
 
 class Frame:
@@ -78,7 +78,7 @@ class Frame:
             print(f"FRAME CLASS: Error in global stiffness matrix: {e}")
             raise ValueError(f"Error in global stiffness matrix: {e}")
 
-    def displacemets(self) -> np.ndarray:
+    def displacements(self) -> np.ndarray:
         """Returns the displacements vector for the frame"""
         # [K] x {d} = {F}
         # {d} = [K]^-1 x {F}
@@ -116,112 +116,26 @@ class Frame:
         # calculate the global stiffness matrix, restraints vector, and loads vector
         K = self.global_stiffness_matrix()
         F = self.loads()
-        D = self.displacemets()
+        D = self.displacements()
 
         # [A] è il vettore colonna che contiene le reazioni vincolari
         A = K @ D - F
         return A
 
-    def generate_node_report(self):
-        A = self.reactions()
-        D = self.displacemets()
-        L = self.loads()
-
-        restraints_ = (
-            lambda x, y, r: f"[{'X' if x else '-'} {'X' if y else '-'} {'X' if r else '-'}]"
-        )
-
-        X = np.empty((len(self.nodes), 12), dtype=object)
-
-        X[:, 0] = [f"n{node.id}" for node in self.nodes]
-        X[:, 1] = [str(node.coordinates) for node in self.nodes]
-        X[:, 2] = [restraints_(*node.restraints) for node in self.nodes]
-        X[:, 3] = [f"{(float(A[i]))/1000:.1f} kN" for i in range(0, len(A), 3)]
-        X[:, 4] = [f"{(float(A[i]))/1000:.1f} kN" for i in range(1, len(A), 3)]
-        X[:, 5] = [f"{(float(A[i]))/1000000:.2f} kNm" for i in range(2, len(A), 3)]
-        X[:, 6] = [f"{(float(L[i]))/1000:.1f} kN" for i in range(0, len(L), 3)]
-        X[:, 7] = [f"{(float(L[i]))/1000:.1f} kN" for i in range(1, len(L), 3)]
-        X[:, 8] = [f"{(float(L[i]))/1000000:.2f} kNm" for i in range(2, len(L), 3)]
-        X[:, 9] = [f"{float(D[i]):.1f} mm" for i in range(0, len(D), 3)]
-        X[:, 10] = [f"{float(D[i]):.1f} mm" for i in range(1, len(D), 3)]
-        X[:, 11] = [f"{float(D[i]):.5f} rad" for i in range(2, len(D), 3)]
-
-        note = """
-Note:
-    kN = kiloNewton, kNm = kiloNewton meter, mm = millimeter, rad = radian
-
-    RESTRAINTS:
-    an X indicates a restrained degree of freedom, a - indicates a free degree of freedom
-    a node can be restrained in the horizontal, vertical, and rotational directions
-    ordererd as [X X X].
-    example: 
-    [X X -] is a hinge
-    [- - -] is a free node
-    [- X -] is a vertical support (horizontal roller)
-    [X X X] is a fixed support
-    [- - X] is guided support without rotation
-
-
-    REACTIONS:
-    - Hr = Horizontal reaction, 
-    - Vr = Vertical reaction, 
-    - Mr = Moment reaction
-
-    ACTIONS:
-    - Ha = Horizontal action, 
-    - Va = Vertical action, 
-    - Ma = Moment action
-
-    DISPLACEMENTS:
-    - dx = Displacement in the horizontal direction, 
-    - dy = Displacement in the vertical direction
-    - rz = Rotation around the z-axis
+    def solve(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """Solves the frame and returns
+        - the restraints vector X
+        - the load vector L
+        - the reactions vector R
+        - the displacements vector D,
         """
+        # displacements array
+        D = self.displacements()
+        # reactions array
+        R = self.reactions()
+        # loads array
+        L = self.loads()
+        # restraints array
+        X = self.restraints()
 
-        node_report_table = PrettyTable()
-        node_report_table.field_names = [
-            "Node",
-            "Coordinates",
-            "Restraints",
-            "Hr",
-            "Vr",
-            "Mr",
-            "Ha",
-            "Va",
-            "Ma",
-            "dx",
-            "dy",
-            "rz",
-        ]
-        node_report_table.add_rows(X.tolist())
-
-        releases_ = lambda rel: f"{'O' if rel[0] else '-'} {'O' if rel[1] else '-'}"
-
-        beam_report_table = PrettyTable()
-        beam_report_table.field_names = [
-            "Beam",
-            "Length",
-            "Material",
-            "Section",
-            "Side",
-            "Releases",
-        ]
-        for beam in self.beams:
-            beam_report_table.add_row(
-                [
-                    beam.id,
-                    beam.L,
-                    beam.material.name,
-                    beam.section.profile,
-                    beam.side,
-                    releases_(beam.releases),
-                ]
-            )
-
-        return (
-            note
-            + "\n"
-            + node_report_table.get_string()
-            + "\n"
-            + beam_report_table.get_string()
-        )
+        return X, L, R, D
