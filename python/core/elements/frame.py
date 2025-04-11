@@ -34,21 +34,23 @@ class Frame:
         names = [f"{n1}-{n2}", f"{n2}-{n1}"]
         return next(beam for beam in self.beams if beam.id in names)
 
-    def restraints(self) -> np.ndarray:
+    def restraints(self, by_node: bool = True) -> np.ndarray:
         """Returns the restraints matrix for the frame"""
-        return (
-            np.concatenate(
-                [node.restraints for node in self.nodes]
-            )  # concatenates the restraints of all nodes
-            .astype(int)  # converts the restraints to integers
-            .reshape(-1, 1)  # reshapes the restraints to a column vector
-        )
 
-    def loads(self) -> np.ndarray:
+        # concatenates the restraints of all nodes to a matrix of size (n, 3)
+        restraints = np.vstack([n.restraints for n in self.nodes]).astype(int)
+
+        # if by_node == False it reshapes the restraints to a vector of size (n, 1)
+        return restraints if by_node else restraints.reshape(-1, 1)
+
+    def loads(self, by_node: bool = True) -> np.ndarray:
         """Returns the loads vector for the frame"""
-        return np.concatenate([node.load_vector() for node in self.nodes]).reshape(
-            -1, 1
-        )
+
+        # concatenates the loads of all nodes to a matrix of size (n, 3)
+        loads = np.vstack([n.load_vector() for n in self.nodes])
+
+        # if by_node == False it reshapes the loads to a vector of size (n, 1)
+        return loads if by_node else loads.reshape(-1, 1)
 
     def global_stiffness_matrix(self) -> np.ndarray:
         """Returns the global stiffness matrix for the frame"""
@@ -76,52 +78,58 @@ class Frame:
             print(f"FRAME CLASS: Error in global stiffness matrix: {e}")
             raise ValueError(f"Error in global stiffness matrix: {e}")
 
-    def displacements(self) -> np.ndarray:
+    def displacements(self, by_node: bool = True) -> np.ndarray:
         """Returns the displacements vector for the frame"""
         # [K] x {d} = {F}
         # {d} = [K]^-1 x {F}
 
         # calculate the global stiffness matrix, restraints vector, and loads vector
         K = self.global_stiffness_matrix()
-        R = self.restraints()
-        F = self.loads()
+        X = self.restraints(by_node=False)
+        L = self.loads(by_node=False)
 
         # setting the rows and columns of the restraints to zero
         # and setting the diagonal to 1 to avoid singular matrix
         # annulla le righe e le colonne della matrice di rigidezza per i nodi vincolati
         Kr = K.copy()
-        for i in range(len(R)):
-            if R[i] == 1:
+        for i in range(len(X)):
+            if X[i] == 1:
                 Kr[i, :] = 0
                 Kr[:, i] = 0
                 Kr[i, i] = 1  # Set diagonal to 1 to avoid singular matrix
 
         # inverte i gradi di libertà con i gradi di vincolo in modo da
         # annullare  le righe  del vettore dei carichi per i nodi vincolati
-        _R = np.logical_not(R).astype(int)
+        R = np.logical_not(X).astype(int)
 
         # annulla le righe del vettore dei carichi per i nodi vincolati
-        _F = _R * F
+        F = R * L
 
         # solve the equation [K] x {d} = {F} for {d}
-        D = np.linalg.solve(Kr, _F)
-        return D
+        D = np.linalg.solve(Kr, F)
 
-    def reactions(self) -> np.ndarray:
+        # reshape the displacements vector to a matrix of size (n, 3) if by_node is True
+        # altrimenti restituisce il vettore colonna di spostamenti di dimensione (n, 1)
+        return D if not by_node else D.reshape(-1, 3)
+
+    def reactions(self, by_node: bool = True) -> np.ndarray:
         """Solves the frame"""
         # [A] = [K] x {d} - {F}
 
         # calculate the global stiffness matrix, restraints vector, and loads vector
         K = self.global_stiffness_matrix()
-        F = self.loads()
-        D = self.displacements()
+        F = self.loads(by_node=False)
+        D = self.displacements(by_node=False)
 
         # [A] è il vettore colonna che contiene le reazioni vincolari
         A = K @ D - F
-        return A
+
+        # reshape the reactions vector to a matrix of size (n, 3) if by_node is True
+        # altrimenti restituisce il vettore colonna di reazioni di dimensione (n, 1)
+        return A if not by_node else A.reshape(-1, 3)
 
     def solve(self) -> FrameSolution:
-        """Solves the frame and returns
+        """Solves the frame and returns the solution object grouped by node
         - the restraints vector X
         - the load vector L
         - the reactions vector R
