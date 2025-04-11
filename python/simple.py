@@ -1,7 +1,7 @@
 from core.elements import Frame
 from core.materials import select_material
 from core.sections import select_section
-
+from core.report import *
 
 # creo una struttura
 frame = Frame()
@@ -30,8 +30,9 @@ frame.node(n3).set_restraints(True, True, True)
 frame.node(n2).apply_loads(Fy=-100)
 
 
-print(frame.generate_node_report())
-
+print(report_header())
+print(report_node_table(frame))
+print(report_beam_table(frame))
 
 # for s in secs:
 #     print(s.model_dump_json())

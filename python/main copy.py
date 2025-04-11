@@ -63,7 +63,7 @@ print(global_stiffness_matrix)
 
 np.set_printoptions(precision=5, suppress=True)
 print("displacements:")
-print(frame.displacemets())
+print(frame.displacements())
 
 np.set_printoptions(precision=0, suppress=True)
 
