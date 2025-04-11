@@ -47,7 +47,7 @@ class Frame:
         """Returns the loads vector for the frame"""
 
         # concatenates the loads of all nodes to a matrix of size (n, 3)
-        loads = np.vstack([n.load_vector() for n in self.nodes])
+        loads = np.vstack([n.loads for n in self.nodes])
 
         # if by_node == False it reshapes the loads to a vector of size (n, 1)
         return loads if by_node else loads.reshape(-1, 1)

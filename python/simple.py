@@ -18,7 +18,7 @@ b1 = (
     .set_material(m1)
     .set_section(s1)
     .set_side("MINOR")
-    .set_internal_releases(i=True)
+    # .set_internal_releases(i=True)
 )
 b2 = frame.add_beam(n2, n3).set_material(m1).set_section(s1)
 
