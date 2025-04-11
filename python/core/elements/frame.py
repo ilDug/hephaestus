@@ -19,8 +19,8 @@ class Frame:
 
     def add_beam(self, i: int, j: int) -> Beam:
         """Aggiunge un elemento alla struttura"""
-        start = next(node for node in self.nodes if node.id == i)
-        end = next(node for node in self.nodes if node.id == j)
+        start = self.node(i)
+        end = self.node(j)
         beam = Beam(start, end)
         self.beams.append(beam)
         return beam
