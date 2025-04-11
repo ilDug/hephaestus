@@ -1,9 +1,7 @@
 from .beam import Beam
 from .node import Node
 import numpy as np
-from numpy.dtypes import StringDType
-from prettytable import PrettyTable, TableStyle
-
+from ..solution import FrameSolution
 
 class Frame:
 
@@ -122,20 +120,24 @@ class Frame:
         A = K @ D - F
         return A
 
-    def solve(self) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    def solve(self) -> FrameSolution:
         """Solves the frame and returns
         - the restraints vector X
         - the load vector L
         - the reactions vector R
         - the displacements vector D,
         """
-        # displacements array
-        D = self.displacements()
-        # reactions array
-        R = self.reactions()
-        # loads array
-        L = self.loads()
+        # nodes list
+        N = self.nodes
+        # beams list
+        B = self.beams
         # restraints array
         X = self.restraints()
+        # loads array
+        L = self.loads()
+        # reactions array
+        R = self.reactions()
+        # displacements array
+        D = self.displacements()
 
-        return X, L, R, D
+        return FrameSolution(N, B, X, L, R, D)

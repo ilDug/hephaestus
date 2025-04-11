@@ -29,10 +29,11 @@ frame.node(n3).set_restraints(True, True, True)
 
 frame.node(n2).apply_loads(Fy=-100)
 
+sol = frame.solve()
 
 print(report_header())
-print(report_node_table(frame))
-print(report_beam_table(frame))
+print(report_node_table(sol))
+print(report_beam_table(sol))
 
 # for s in secs:
 #     print(s.model_dump_json())

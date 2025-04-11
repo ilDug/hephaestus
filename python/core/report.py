@@ -1,4 +1,5 @@
 from prettytable import PrettyTable, TableStyle
+from .solution import FrameSolution
 from .elements import Frame
 import numpy as np
 
@@ -39,7 +40,7 @@ Note:
     return header
 
 
-def report_node_table(frame:Frame)-> str:
+def report_node_table(frame: FrameSolution) -> str:
     """Returns the node report table."""
     fields = [
         "Node",
@@ -64,38 +65,38 @@ def report_node_table(frame:Frame)-> str:
 
     # DATA
     ############################
-    R = frame.reactions()
-    L = frame.loads()
-    D = frame.displacements()
-
     # crea una matrice vuota di dimensioni (nodi, colonne) con tipo object
     # per contenere i dati del report
-    X = np.empty((len(frame.nodes), len(fields)), dtype=object)
+    X = np.empty((len(frame.N), len(fields)), dtype=object)
 
     # prima riga: nome del nodo (preceduto dalla lettera 'n')
-    X[:, 0] = [f"n{node.id}" for node in frame.nodes]
+    X[:, 0] = [f"n{node.id}" for node in frame.N]
     # seconda riga: coordinate del nodo
-    X[:, 1] = [str(node.coordinates) for node in frame.nodes]
+    X[:, 1] = [str(node.coordinates) for node in frame.N]
     # terza riga: vincoli del nodo
-    X[:, 2] = [restraints_(*node.restraints) for node in frame.nodes]
+    X[:, 2] = [restraints_(*node.restraints) for node in frame.N]
     # quarta riga: reazioni orizzontali del nodo
-    X[:, 3] = [f"{(float(R[i]))/1000:.1f} kN" for i in range(0, len(R), 3)]
+    X[:, 3] = [f"{(float(frame.R[i]))/1000:.1f} kN" for i in range(0, len(frame.R), 3)]
     # quinta riga: reazioni verticali del nodo
-    X[:, 4] = [f"{(float(R[i]))/1000:.1f} kN" for i in range(1, len(R), 3)]
+    X[:, 4] = [f"{(float(frame.R[i]))/1000:.1f} kN" for i in range(1, len(frame.R), 3)]
     # sesta riga: reazioni momenti del nodo
-    X[:, 5] = [f"{(float(R[i]))/1000000:.2f} kNm" for i in range(2, len(R), 3)]
+    X[:, 5] = [
+        f"{(float(frame.R[i]))/1000000:.2f} kNm" for i in range(2, len(frame.R), 3)
+    ]
     # settima riga: azioni orizzontali del nodo
-    X[:, 6] = [f"{(float(L[i]))/1000:.1f} kN" for i in range(0, len(L), 3)]
+    X[:, 6] = [f"{(float(frame.L[i]))/1000:.1f} kN" for i in range(0, len(frame.L), 3)]
     # ottava riga: azioni verticali del nodo
-    X[:, 7] = [f"{(float(L[i]))/1000:.1f} kN" for i in range(1, len(L), 3)]
+    X[:, 7] = [f"{(float(frame.L[i]))/1000:.1f} kN" for i in range(1, len(frame.L), 3)]
     # nona riga: azioni momenti del nodo
-    X[:, 8] = [f"{(float(L[i]))/1000000:.2f} kNm" for i in range(2, len(L), 3)]
+    X[:, 8] = [
+        f"{(float(frame.L[i]))/1000000:.2f} kNm" for i in range(2, len(frame.L), 3)
+    ]
     # decima riga: spostamenti orizzontali del nodo
-    X[:, 9] = [f"{float(D[i]):.1f} mm" for i in range(0, len(D), 3)]
+    X[:, 9] = [f"{float(frame.D[i]):.1f} mm" for i in range(0, len(frame.D), 3)]
     # undicesima riga: spostamenti verticali del nodo
-    X[:, 10] = [f"{float(D[i]):.1f} mm" for i in range(1, len(D), 3)]
+    X[:, 10] = [f"{float(frame.D[i]):.1f} mm" for i in range(1, len(frame.D), 3)]
     # dodicesima riga: rotazioni del nodo
-    X[:, 11] = [f"{float(D[i]):.5f} rad" for i in range(2, len(D), 3)]
+    X[:, 11] = [f"{float(frame.D[i]):.5f} rad" for i in range(2, len(frame.D), 3)]
 
     # TABLE
     ############################
@@ -107,7 +108,7 @@ def report_node_table(frame:Frame)-> str:
     return node_report_table.get_string()
 
 
-def report_beam_table(frame:Frame)-> str:
+def report_beam_table(frame: FrameSolution) -> str:
     """Returns the beam report table."""
 
     fields = [
@@ -127,21 +128,20 @@ def report_beam_table(frame:Frame)-> str:
 
     # crea una matrice vuota di dimensioni (nodi, colonne) con tipo object
     # per contenere i dati del report
-    X = np.empty((len(frame.beams), len(fields)), dtype=object)
+    X = np.empty((len(frame.B), len(fields)), dtype=object)
 
     # prima riga: nome dell'elemento (preceduto dalla lettera 'n')
-    X[:, 0] = [beam.id for beam in frame.beams]
+    X[:, 0] = [beam.id for beam in frame.B]
     # seconda riga: lunghezza del nodo
-    X[:, 1] = [f"{int(beam.L)} mm" for beam in frame.beams]
+    X[:, 1] = [f"{int(beam.L)} mm" for beam in frame.B]
     # terza riga: nome del materiale
-    X[:, 2] = [beam.material.name for beam in frame.beams]
+    X[:, 2] = [beam.material.name for beam in frame.B]
     # quarta riga: nome della sezione
-    X[:, 3] = [beam.section.profile for beam in frame.beams]
+    X[:, 3] = [beam.section.profile for beam in frame.B]
     # quinta riga: lato su cui agisce il carico della sezione
-    X[:, 4] = [beam.side for beam in frame.beams]
+    X[:, 4] = [beam.side for beam in frame.B]
     # sesta riga: rilasci interni della trave
-    X[:, 5] = [releases_(beam.releases) for beam in frame.beams]
-
+    X[:, 5] = [releases_(beam.releases) for beam in frame.B]
 
     # TABLE
     ############################
