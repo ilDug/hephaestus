@@ -3,7 +3,8 @@ from .solution import FrameSolution
 from .elements import Frame
 import numpy as np
 
-def report_header()->str:
+
+def report_header() -> str:
     """Returns the header for the report."""
 
     header = """
@@ -100,7 +101,7 @@ def report_node_table(frame: FrameSolution) -> str:
     ############################
     node_report_table = PrettyTable()
     node_report_table.set_style(TableStyle.SINGLE_BORDER)
-    node_report_table.field_names =fields
+    node_report_table.field_names = fields
     node_report_table.add_rows(X.tolist())
 
     return node_report_table.get_string()
@@ -149,36 +150,3 @@ def report_beam_table(frame: FrameSolution) -> str:
     beam_report_table.add_rows(X.tolist())
 
     return beam_report_table.get_string()
-
-    # # crea una matrice vuota di dimensioni (nodi, colonne) con tipo object
-    # # per contenere i dati del report
-    # X = np.empty((len(frame.N), len(fields)), dtype=object)
-
-    # # prima riga: nome del nodo (preceduto dalla lettera 'n')
-    # X[:, 0] = [f"n{node.id}" for node in frame.N]
-    # # seconda riga: coordinate del nodo
-    # X[:, 1] = [str(node.coordinates) for node in frame.N]
-    # # terza riga: vincoli del nodo
-    # X[:, 2] = [restraints_(*node.restraints) for node in frame.N]
-    # # quarta riga: reazioni orizzontali del nodo
-    # X[:, 3] = [f"{(float(frame.R[i]))/1000:.1f} kN" for i in range(0, len(frame.R), 3)]
-    # # quinta riga: reazioni verticali del nodo
-    # X[:, 4] = [f"{(float(frame.R[i]))/1000:.1f} kN" for i in range(1, len(frame.R), 3)]
-    # # sesta riga: reazioni momenti del nodo
-    # X[:, 5] = [
-    #     f"{(float(frame.R[i]))/1000000:.2f} kNm" for i in range(2, len(frame.R), 3)
-    # ]
-    # # settima riga: azioni orizzontali del nodo
-    # X[:, 6] = [f"{(float(frame.L[i]))/1000:.1f} kN" for i in range(0, len(frame.L), 3)]
-    # # ottava riga: azioni verticali del nodo
-    # X[:, 7] = [f"{(float(frame.L[i]))/1000:.1f} kN" for i in range(1, len(frame.L), 3)]
-    # # nona riga: azioni momenti del nodo
-    # X[:, 8] = [
-    #     f"{(float(frame.L[i]))/1000000:.2f} kNm" for i in range(2, len(frame.L), 3)
-    # ]
-    # # decima riga: spostamenti orizzontali del nodo
-    # X[:, 9] = [f"{float(frame.D[i]):.1f} mm" for i in range(0, len(frame.D), 3)]
-    # # undicesima riga: spostamenti verticali del nodo
-    # X[:, 10] = [f"{float(frame.D[i]):.1f} mm" for i in range(1, len(frame.D), 3)]
-    # # dodicesima riga: rotazioni del nodo
-    # X[:, 11] = [f"{float(frame.D[i]):.5f} rad" for i in range(2, len(frame.D), 3)]

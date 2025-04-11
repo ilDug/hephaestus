@@ -3,6 +3,7 @@ from .node import Node
 import numpy as np
 from ..solution import FrameSolution
 
+
 class Frame:
 
     nodes: list[Node] = []
