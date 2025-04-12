@@ -14,10 +14,10 @@ n2 = frame.add_node((500, 0))
 n3 = frame.add_node((1000, 0))
 
 b1 = (
-    frame.add_beam(n1, n2)
+    frame.add_beam(n2, n1)
     .set_material(m1)
     .set_section(s1)
-    .set_side("MINOR")
+    # .set_side("MINOR")
     # .set_internal_releases(i=True)
 )
 b2 = frame.add_beam(n2, n3).set_material(m1).set_section(s1)
@@ -27,7 +27,12 @@ frame.node(n1).set_restraints(True, True, True)
 frame.node(n3).set_restraints(True, True, True)
 
 
-frame.node(n2).apply_loads(Fy=-100)
+# frame.node(n2).apply_loads(Fy=-100)
+# frame.node(n1).apply_loads(Fy=-100)
+# frame.node(n2).apply_loads(Mz=12)
+
+b1.apply_distributed_load(-10)
+b2.apply_distributed_load(-10)
 
 sol = frame.solve()
 

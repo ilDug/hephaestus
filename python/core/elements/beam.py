@@ -4,7 +4,7 @@ from .node import Node
 from ..matrix import generate_stiffness_matrix_2d, generate_rotation_matrix_2d
 from ..materials import Material
 from ..sections import Section
-
+from ..loads import *
 
 class Beam:
     id: str
@@ -29,13 +29,15 @@ class Beam:
     side: Literal["MAJOR", "MINOR"] = "MAJOR"
     """lato della sezione su cui si applica il carico"""
 
+    dload: tuple[float, float] = (0, 0)
+    """carico distribuito iniziale e finale in direzione perpendicolare alla trave in kN/m"""
+
     def __init__(self, start: Node, end: Node):
         """crea una nuova trave tra due nodi"""
         self.i = start
         self.j = end
         self.L = ((self.j.x - self.i.x) ** 2 + (self.j.y - self.i.y) ** 2) ** (1 / 2)
         self.id = f"{self.i.id}-{self.j.id}"
-        print(f"the length of the beam `{self.id}` is {self.L}mm")
 
     def set_material(self, material: Material) -> "Beam":
         """imposta il materiale della trave"""
@@ -59,22 +61,27 @@ class Beam:
         self.side = side
         return self
 
-    # def apply_distributed_load(
-    #     self, qi: float, qj: float = None, start: int = 0, end: int = None
-    # ) -> "Beam":
-    #     """applica un carico distribuito alla trave
-    #     qi = carico iniziale in N/mm
-    #     qj = carico finale in N/mm (default = None, carico uniforme)
-    #     start = posizione iniziale del carico distribuito in mm (default = 0)
-    #     end = posizione finale del carico distribuito in mm (default = None, lunghezza della trave)
-    #     """
-    #     if end is None:
-    #         end = self.L
+    def apply_distributed_load(self, qi: float, qj: float = None) -> "Beam":
+        """applica un carico distribuito in direzione perpendicolare alla trave
+        qi: carico distribuito iniziale in kN/m
+        qj: carico distribuito finale in kN/m
+        """
+        # controlla se il carico è nullo
+        if qi == 0 and (qj is None or qj == 0):
+            raise ValueError("qi and qj cannot be both 0")
 
-    #     if qj is None:
-    #         qj = qi
+        # Se qj è nullo, lo imposta uguale a qi
+        if qj is None:
+            qj = qi
 
-    #     return self
+        # converte da kN/m a N/mm
+        qi = qi * 1e3 / 1e3
+        qj = qj * 1e3 / 1e3
+
+        # imposta i carichi distribuiti
+        self.dload = (qi, qj)
+
+        return self
 
     def stiffness_matrix_local(self) -> np.ndarray:
         """genera la matrice di rigidezza locale della trave"""
@@ -148,3 +155,22 @@ class Beam:
         """genera la matrice di rotazione della trave"""
         angle = self.rotation_angle()
         return generate_rotation_matrix_2d(angle)
+
+    def equivalent_loads(self) -> np.ndarray:
+        """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti"""
+        # calcola i carichi equivalenti sui nodi della trave
+        qi, qj = self.dload
+        L = self.L
+
+        match self.releases:
+            case (False, False):
+                eq_loads = equivalent_beam_loads_vector_2d_fixed_fixed(qi, qj, L)
+
+        # ruota i carichi equivalenti nel sistema globale
+        R = self.rotation_matrix()
+        # carichi equivalenti trasformati nel sistema globale usando la matrice di rotazione
+        G = R @ eq_loads.reshape(-1, 1)
+        # il vettore dei carichi deve essere un  vettore con una sola riga
+        G = G.flatten()
+
+        return G[:3], G[3:]  # carichi equivalenti sui nodi i e j

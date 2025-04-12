@@ -117,6 +117,7 @@ def report_beam_table(frame: FrameSolution) -> str:
         "Section",
         "Side",
         "Releases",
+        "distibuted load (start-end)",
     ]
     # LAMBDAS
     ############################
@@ -141,6 +142,15 @@ def report_beam_table(frame: FrameSolution) -> str:
     X[:, 4] = [beam.side for beam in frame.B]
     # sesta riga: rilasci interni della trave
     X[:, 5] = [releases_(beam.releases) for beam in frame.B]
+    # settima riga: carico distribuito della trave
+    X[:, 6] = [
+        (
+            f"{beam.dload[0]} kN/m | {beam.dload[1]} kN/m"
+            if beam.dload[0] != beam.dload[1]
+            else f"{beam.dload[0]} kN/m"
+        )
+        for beam in frame.B
+    ]
 
     # TABLE
     ############################

@@ -1,3 +1,4 @@
+from typing import Literal
 from .beam import Beam
 from .node import Node
 import numpy as np
@@ -44,11 +45,25 @@ class Frame:
         # if by_node == False it reshapes the restraints to a vector of size (n, 1)
         return restraints if by_node else restraints.reshape(-1, 1)
 
-    def loads(self, by_node: bool = True) -> np.ndarray:
+    def loads(
+        self,
+        by_node: bool = True,
+        mode: Literal["ONLY_NODES", "ALL", "ONLY_BEAMS"] = "ALL",
+    ) -> np.ndarray:
         """Returns the loads vector for the frame"""
 
         # concatenates the loads of all nodes to a matrix of size (n, 3)
-        loads = np.vstack([n.loads for n in self.nodes])
+        loads = (
+            np.vstack([n.loads for n in self.nodes])
+            if mode != "ONLY_BEAMS"
+            else np.zeros((len(self.nodes), 3))
+        )
+
+        # per ogni trave calcola i carichi equivalenti sui nodi e li aggiunge sai carichi dei nodi
+        for beam in self.beams:
+            eq_i, eq_j = beam.equivalent_loads()
+            loads[beam.i.id - 1] += eq_i if mode == "ALL" else 0
+            loads[beam.j.id - 1] += eq_j if mode == "ALL" else 0
 
         # if by_node == False it reshapes the loads to a vector of size (n, 1)
         return loads if by_node else loads.reshape(-1, 1)
@@ -143,7 +158,7 @@ class Frame:
         # restraints array
         X = self.restraints()
         # loads array
-        L = self.loads()
+        L = self.loads(mode="ONLY_NODES")
         # reactions array
         R = self.reactions()
         # displacements array

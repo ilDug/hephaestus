@@ -39,16 +39,12 @@ def generate_stiffness_matrix_2d(
 
     match releases:
         case (False, False):
-            print("generating stiffness matrix for fixed-fixed beam")
             stiffness_matrix = stiffness_matrix_2d_fixed_fixed_beam(E, A, I, L)
         case (True, False):
-            print("generating stiffness matrix for fixed-hinged beam")
             stiffness_matrix = stiffness_matrix_2d_hinged_fixed_beam(E, A, I, L)
         case (False, True):
-            print("generating stiffness matrix for hinged-fixed beam")
             stiffness_matrix = stiffness_matrix_2d_fixed_hinged_beam(E, A, I, L)
         case (True, True):
-            print("generating stiffness matrix for hinged-hinged beam")
             stiffness_matrix = stiffness_matrix_2d_hinged_hinged_beam(E, A, I, L)
 
     # arrotodamento a 3 decimali
