@@ -99,6 +99,27 @@ def generate_rotation_matrix_2d(angle: float) -> np.ndarray:
     return rotation_matrix
 
 
+def distributed_loads_rotation_matrix_2d(angle: float) -> np.ndarray:
+    """
+    Genera una matrice di rotazione per ruotare i carichi distribuiti in 2D
+    da sistema globale a sistema locale ( e viceversa).
+    La matrice di rotazione è una matrice 4x4 che ruota i carichi distribuiti
+    lungo la trave.
+    """
+    s = np.sin(angle)
+    c = np.cos(angle)
+    R = np.array(
+        [
+            [c, s, 0, 0],
+            [-s, c, 0, 0],
+            [0, 0, c, s],
+            [0, 0, -s, c],
+        ],
+        dtype=float,
+    )
+    return R
+
+
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------

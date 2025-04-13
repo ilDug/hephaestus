@@ -1,7 +1,11 @@
 from typing import Annotated, Literal
 import numpy as np
 from .node import Node
-from ..matrix import generate_stiffness_matrix_2d, generate_rotation_matrix_2d
+from ..matrix import (
+    generate_stiffness_matrix_2d,
+    generate_rotation_matrix_2d,
+    distributed_loads_rotation_matrix_2d,
+)
 from ..materials import Material
 from ..sections import Section
 from ..loads import *
@@ -176,29 +180,19 @@ class Beam:
 
         # ruota il carico distribuito nel sistema locale della trave
         # [qxi,qyi,qxj,qyj] => [qni, qti, qnj, qtj]
+        # __________________________________________________________
         angle = self.rotation_angle()
-        s = np.sin(angle)
-        c = np.cos(angle)
-        R = np.array(
-            [
-                [c, s, 0, 0],
-                [-s, c, 0, 0],
-                [0, 0, c, s],
-                [0, 0, -s, c],
-            ],
-            dtype=float,
-        )
+        # matrice di rotazione per il carico distribuito
+        R = distributed_loads_rotation_matrix_2d(angle)
         # carico distribuito ruotato nel sistema locale della trave
         q = R @ self.dload.reshape(-1, 1)
         # il vettore dei carichi deve essere un  vettore con una sola riga
         q = q.flatten()  # [qni, qti, qnj, qtj]
 
-        np.set_printoptions(precision=1, suppress=True)
-        print(f"angle : {angle}")
-        print(f"R : {R}")
-        print(f"q globale : {self.dload}")
-        print(f"q locale : {q}")
-
+        # calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti
+        # [Ni, Ti, Mi, Nj, Tj, Mj] in N e Nmm
+        eq_loads = np.zeros(6, dtype=float)
+        # carichi equivalenti sui nodi i e j
         match self.releases:
             case (False, False):
                 eq_loads = equivalent_beam_loads_vector_2d_fixed_fixed(q, self.L)
@@ -209,7 +203,7 @@ class Beam:
             case (True, True):
                 pass
 
-        # ruota i carichi equivalenti nel sistema globale
+        # ruota nuovamente i carichi equivalenti nel sistema globale (angolo negativo)
         R = generate_rotation_matrix_2d(-angle)
         # carichi equivalenti trasformati nel sistema globale usando la matrice di rotazione
         G = R @ eq_loads.reshape(-1, 1)
