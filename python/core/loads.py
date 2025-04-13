@@ -33,18 +33,18 @@ def equivalent_beam_loads_vector_2d_fixed_fixed(q: np.ndarray, l: int) -> np.nda
     qt = max(qti, qtj) - delta_qt
 
     # carichi dovuti alla parte costante del carico
-    Ti = -qt * l / 2
-    Mi = -qt * l**2 / 12
-    Tj = -qt * l / 2
-    Mj = +qt * l**2 / 12
+    Ti = +qt * l / 2
+    Mi = +qt * l**2 / 12
+    Tj = +qt * l / 2
+    Mj = -qt * l**2 / 12
 
     constants = np.array([Ni, Ti, Mi, Nj, Tj, Mj], dtype=float)
 
     # calcola i carichi dovuti alla parte variabile del carico
-    Ti = -3 / 20 * delta_qt * l
-    Mi = -1 / 30 * delta_qt * l**2
-    Tj = -7 / 20 * delta_qt * l
-    Mj = +1 / 20 * delta_qt * l**2
+    Ti = 3 / 20 * delta_qt * l
+    Mi = 1 / 30 * delta_qt * l**2
+    Tj = 7 / 20 * delta_qt * l
+    Mj = -1 / 20 * delta_qt * l**2
 
     # se il nodo j non è il  nodo con il carico maggiore, scambia i valori
     if qti > qtj:

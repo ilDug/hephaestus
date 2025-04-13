@@ -51,7 +51,7 @@ class Frame:
         mode: Literal["ONLY_NODES", "ALL", "ONLY_BEAMS"] = "ALL",
     ) -> np.ndarray:
         """Returns the loads vector for the frame
-        L = L_nodes - L_beams
+        L = L_nodes + L_beams
         """
 
         # concatenates the loads of all nodes to a matrix of size (n, 3)
@@ -61,11 +61,11 @@ class Frame:
             else np.zeros((len(self.nodes), 3))
         )
 
-        # per ogni trave calcola i carichi equivalenti sui nodi e li SOTTRAE sai carichi dei nodi
+        # per ogni trave calcola i carichi equivalenti sui nodi e li AGGIUNGE sai carichi dei nodi
         for beam in self.beams:
             eq_i, eq_j = beam.equivalent_loads()
-            loads[beam.i.id - 1] -= eq_i if mode == "ALL" else 0
-            loads[beam.j.id - 1] -= eq_j if mode == "ALL" else 0
+            loads[beam.i.id - 1] += eq_i if mode == "ALL" else 0
+            loads[beam.j.id - 1] += eq_j if mode == "ALL" else 0
 
         # if by_node == False it reshapes the loads to a vector of size (n, 1)
         return loads if by_node else loads.reshape(-1, 1)
