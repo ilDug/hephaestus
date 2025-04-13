@@ -63,8 +63,8 @@ class Beam:
 
     def apply_distributed_load(self, qi: float, qj: float = None) -> "Beam":
         """applica un carico distribuito in direzione perpendicolare alla trave
-        qi: carico distribuito iniziale in kN/m
-        qj: carico distribuito finale in kN/m
+        - qi: carico distribuito iniziale in kN/m
+        - qj: carico distribuito finale in kN/m
         """
         # controlla se il carico è nullo
         if qi == 0 and (qj is None or qj == 0):
@@ -126,16 +126,16 @@ class Beam:
             raise ValueError("dx and dy are both 0")
 
         # analzza i casi in cui dx o dy sono 0
-        if dx == 0 and dy > 0:
+        if dx == 0 and dy > 0:  # trave verticale con verso l'alto
             return np.pi / 2
 
-        if dx == 0 and dy < 0:
+        if dx == 0 and dy < 0:  # trave verticale con verso il basso
             return (3 / 2) * np.pi
 
-        if dy == 0 and dx > 0:
+        if dy == 0 and dx > 0:  # trave orizzontale con verso a destra
             return 0
 
-        if dy == 0 and dx < 0:
+        if dy == 0 and dx < 0:  # trave orizzontale con verso a sinistra
             return np.pi
 
         # analizza i casi in cui dx o dy sono diversi da 0
@@ -158,13 +158,20 @@ class Beam:
 
     def equivalent_loads(self) -> np.ndarray:
         """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti"""
-        # calcola i carichi equivalenti sui nodi della trave
+
+        # carichi equivalenti nel sistema locale
         qi, qj = self.dload
         L = self.L
 
         match self.releases:
             case (False, False):
                 eq_loads = equivalent_beam_loads_vector_2d_fixed_fixed(qi, qj, L)
+            case (False, True):
+                pass
+            case (True, False):
+                pass
+            case (True, True):
+                pass
 
         # ruota i carichi equivalenti nel sistema globale
         R = self.rotation_matrix()

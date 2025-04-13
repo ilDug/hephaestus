@@ -20,7 +20,7 @@ b1 = (
     # .set_side("MINOR")
     # .set_internal_releases(i=True)
 )
-b2 = frame.add_beam(n2, n3).set_material(m1).set_section(s1)
+b2 = frame.add_beam(n3, n2).set_material(m1).set_section(s1)
 
 
 frame.node(n1).set_restraints(True, True, True)
