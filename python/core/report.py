@@ -145,9 +145,9 @@ def report_beam_table(frame: FrameSolution) -> str:
     # settima riga: carico distribuito della trave
     X[:, 6] = [
         (
-            f"{beam.dload[0]} kN/m | {beam.dload[1]} kN/m"
-            if beam.dload[0] != beam.dload[1]
-            else f"{beam.dload[0]} kN/m"
+            f"X: {beam.dload[0]}/{beam.dload[2]} kN/m | Y:{beam.dload[1]}/{beam.dload[3]} kN/m"
+            if beam.dload[2] != beam.dload[0] and beam.dload[3] != beam.dload[1]
+            else f"X: {beam.dload[0]} kN/m | Y:{beam.dload[1]} kN/m"
         )
         for beam in frame.B
     ]

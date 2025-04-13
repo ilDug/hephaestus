@@ -10,8 +10,8 @@ m1 = select_material("S235")
 s1 = select_section("HEA100")
 
 n1 = frame.add_node((0, 0))
-n2 = frame.add_node((500, 0))
-n3 = frame.add_node((1000, 0))
+n2 = frame.add_node((0, 500))
+n3 = frame.add_node((0, 1000))
 
 b1 = (
     frame.add_beam(n2, n1)
@@ -20,7 +20,7 @@ b1 = (
     # .set_side("MINOR")
     # .set_internal_releases(i=True)
 )
-b2 = frame.add_beam(n3, n2).set_material(m1).set_section(s1)
+b2 = frame.add_beam(n2, n3).set_material(m1).set_section(s1)
 
 
 frame.node(n1).set_restraints(True, True, True)
@@ -31,8 +31,8 @@ frame.node(n3).set_restraints(True, True, True)
 # frame.node(n1).apply_loads(Fy=-100)
 # frame.node(n2).apply_loads(Mz=12)
 
-b1.apply_distributed_load(-10)
-b2.apply_distributed_load(-10)
+b1.apply_distributed_load(qxi=2, qyi=-10)
+b2.apply_distributed_load(qxi=2, qyi=-10)
 
 sol = frame.solve()
 

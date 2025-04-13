@@ -1,45 +1,57 @@
 import numpy as np 
 
 
-def equivalent_beam_loads_vector_2d_fixed_fixed(qi: float, qj:float, l:int) -> np.ndarray:
+def equivalent_beam_loads_vector_2d_fixed_fixed(q: np.ndarray, l: int) -> np.ndarray:
     """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti
-    - qi : carico distribuito sul nodo i in N/mm
-    - qj : carico distribuito sul nodo j in N/mm
+    - qni : carico distribuito longituidinale sul nodo i in N/mm
+    - qti : carico distribuito trasversale sul nodo i in N/mm
+    - qnj : carico distribuito longituidinale sul nodo j in N/mm
+    - qtj : carico distribuito trasversale sul nodo j in N/mm
     - l : lunghezza della trave in mm
+
+    Returns:
+        np.ndarray: carichi equivalenti sui nodi i e j
+        [Ni, Ti, Mi, Nj, Tj, Mj] in N e Nmm
     """
 
-    # calcola il delta di carico
-    dq = abs(qj-qi)
+    qni, qti, qnj, qtj = q
+    eq_loads = np.zeros(6, dtype=float)  # [Ni, Ti, Mi, Nj, Tj, Mj]
 
-    # calcola la parte costante
-    q = max(qi, qj) - dq
+    # AZIONI LONGITUDINALI lungo l'asse della trave
+    ##################################
+    # carico totale
+    N = (qni + qnj) / 2 * l
+    Ni = N / 2
+    Nj = N / 2
+
+    # AZIONI TRASVERSALI normali all'asse della trave
+    ##################################
+    # calcola il delta di carico
+    delta_qt = qtj - qti
+
+    # calcola la parte costante (rettangolare)
+    qt = max(qti, qtj) - delta_qt
 
     # carichi dovuti alla parte costante del carico
-    Cni = 0 
-    Cti = -q * l / 2
-    Cmi = -q * l**2 / 12
-    Cnj = 0
-    Ctj = -q * l / 2
-    Cmj = +q * l**2 / 12
+    Ti = -qt * l / 2
+    Mi = -qt * l**2 / 12
+    Tj = -qt * l / 2
+    Mj = +qt * l**2 / 12
 
-    constants = np.array([
-        Cni, Cti, Cmi,
-        Cnj, Ctj, Cmj
-    ], dtype=float)
+    constants = np.array([Ni, Ti, Mi, Nj, Tj, Mj], dtype=float)
 
     # calcola i carichi dovuti alla parte variabile del carico
-    Vni = 0
-    Vti = -3 / 20 * dq * l
-    Vmi = -1 / 30 * dq * l**2
-    Vnj = 0
-    Vtj = -7 / 20 * dq * l
-    Vmj = +1 / 20 * dq * l**2
+    Ti = -3 / 20 * delta_qt * l
+    Mi = -1 / 30 * delta_qt * l**2
+    Tj = -7 / 20 * delta_qt * l
+    Mj = +1 / 20 * delta_qt * l**2
 
     # se il nodo j non è il  nodo con il carico maggiore, scambia i valori
-    if qi > qj:
-        Vni, Vti, Vmi, Vnj, Vtj, Vmj = Vnj, Vtj, Vmj, Vni, Vti, Vmi
+    if qti > qtj:
+        Ti, Mi, Tj, Mj = Tj, Mj, Ti, Mi
 
-    variables = np.array([Vni, Vti, Vmi, Vnj, Vtj, Vmj], dtype=float)
+    variables = np.array([Ni, Ti, Mi, Nj, Tj, Mj], dtype=float)
 
-    # riprtiscine i carichi equivalenti su ciascuno dei nodi
-    return constants + variables
+    # somma le due parti
+    eq_loads = constants + variables
+    return eq_loads
