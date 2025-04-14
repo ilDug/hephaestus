@@ -8,7 +8,7 @@ from ..matrix import (
 )
 from ..materials import Material
 from ..sections import Section
-from ..loads import *
+from ..loads import EquivalentLoad, PointLoad, DistributedLoad
 
 class Beam:
     id: str
@@ -33,14 +33,8 @@ class Beam:
     side: Literal["MAJOR", "MINOR"] = "MAJOR"
     """lato della sezione su cui si applica il carico"""
 
-    dload = np.zeros(4, dtype=float)
-    """carico distribuito iniziale e finale in kN/m
-    - qxi: carico distribuito iniziale in direzione X in kN/m
-    - qyi: carico distribuito iniziale in direzione Y in kN/m
-    - qxj: carico distribuito finale in direzione X in kN/m
-    - qyj: carico distribuito finale in direzione Y in kN/m
-
-    """
+    external_loads: list[EquivalentLoad] = []
+    """lista dei carichi esterni applicati alla trave"""
 
     def __init__(self, start: Node, end: Node):
         """crea una nuova trave tra due nodi"""
@@ -92,14 +86,34 @@ class Beam:
         if qyj is None:
             qyj = qyi
 
-        # converte da kN/m a N/mm
-        qxi = qxi * 1e3 / 1e3  # kN/m -> N/mm
-        qyi = qyi * 1e3 / 1e3  # kN/m -> N/mm
-        qxj = qxj * 1e3 / 1e3  # kN/m -> N/mm
-        qyj = qyj * 1e3 / 1e3  # kN/m -> N/mm
+        # genera un caico distribuito
+        dload = DistributedLoad(np.array([qxi, qyi, qxj, qyj], dtype=float))
+        self.external_loads.append(dload)
+        print(f"carico distribuito {dload.q} kN/m applicato alla trave {self.id}")
+        return self
 
-        # imposta i carichi distribuiti
-        self.dload = np.array([qxi, qyi, qxj, qyj], dtype=float)
+    def apply_point_load(self, x: int, fx: float = None, fy: float = None) -> "Beam":
+        """applica un carico puntuale alla trave.
+        fx: carico in direzione X in kN
+        fy: carico in direzione Y in kN
+        x: posizione del carico lungo la trave in mm
+        """
+        # controlla se il carico è  nullo
+        if not fx and not fy:
+            raise ValueError("carico nullo")
+        if x > self.L:
+            raise ValueError(
+                "la posizione del carico deve essere minore della lunghezza della trave"
+            )
+        if x < 0:
+            raise ValueError("la posizione del carico deve essere maggiore di 0")
+        # concerte il carico in  N
+        fx = fx * 1000 if fx else 0
+        fy = fy * 1000 if fy else 0
+
+        # genera un carico puntuale
+        pload = PointLoad(np.array([fx, fy], dtype=float), x)
+        self.external_loads.append(pload)
         return self
 
     def stiffness_matrix_local(self) -> np.ndarray:
@@ -177,37 +191,10 @@ class Beam:
 
     def equivalent_loads(self) -> np.ndarray:
         """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti"""
+        L = np.zeros(6, dtype=float)
+        for load in self.external_loads:
+            # calcola i carichi equivalenti sui nodi della trave
+            # usando la matrice di rigidezza locale e la matrice di rotazione
+            L += load.solve(self.L, self.rotation_angle(), self.releases)
 
-        # ruota il carico distribuito nel sistema locale della trave
-        # [qxi,qyi,qxj,qyj] => [qni, qti, qnj, qtj]
-        # __________________________________________________________
-        angle = self.rotation_angle()
-        # matrice di rotazione per il carico distribuito
-        R = distributed_loads_rotation_matrix_2d(angle)
-        # carico distribuito ruotato nel sistema locale della trave
-        q = R @ self.dload.reshape(-1, 1)
-        # il vettore dei carichi deve essere un  vettore con una sola riga
-        q = q.flatten()  # [qni, qti, qnj, qtj]
-
-        # calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti
-        # [Ni, Ti, Mi, Nj, Tj, Mj] in N e Nmm
-        eq_loads = np.zeros(6, dtype=float)
-        # carichi equivalenti sui nodi i e j
-        match self.releases:
-            case (False, False):
-                eq_loads = equivalent_beam_loads_vector_2d_fixed_fixed(q, self.L)
-            case (False, True):
-                pass
-            case (True, False):
-                pass
-            case (True, True):
-                pass
-
-        # ruota nuovamente i carichi equivalenti nel sistema globale (angolo negativo)
-        R = generate_rotation_matrix_2d(-angle)
-        # carichi equivalenti trasformati nel sistema globale usando la matrice di rotazione
-        G = R @ eq_loads.reshape(-1, 1)
-        # il vettore dei carichi deve essere un  vettore con una sola riga
-        G = G.flatten()
-
-        return G[:3], G[3:]  # carichi equivalenti sui nodi i e j
+        return L[:3], L[3:]  # carichi equivalenti sui nodi i e j

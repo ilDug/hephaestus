@@ -1,6 +1,7 @@
 import numpy as np
 
-class DistibutedLoad:
+
+class DistributedLoad:
     """implementazioen di EquivalentLoad per un carico distribuito costano o linearmente variabile"""
 
     q: np.ndarray
@@ -119,27 +120,27 @@ class DistibutedLoad:
         # carichi dovuti alla parte COSTANTE del carico
         match releases:
             case (False, False):
-                Tic = +qt * length / 2
-                Mic = +qt * length**2 / 12
-                Tjc = +qt * length / 2
+                Tic = qt * length / 2
+                Mic = qt * length**2 / 12
+                Tjc = qt * length / 2
                 Mjc = -qt * length**2 / 12
 
             case (True, False):
-                Tic = +qt * length * 3 / 8
+                Tic = qt * length * 3 / 8
                 Mic = 0
-                Tjc = +qt * length * 5 / 8
+                Tjc = qt * length * 5 / 8
                 Mjc = -qt * length**2 / 8
 
             case (False, True):
-                Tic = +qt * length * 5 / 8
-                Mic = +qt * length**2 / 8
-                Tjc = +qt * length * 3 / 8
+                Tic = qt * length * 5 / 8
+                Mic = qt * length**2 / 8
+                Tjc = qt * length * 3 / 8
                 Mjc = 0
 
             case (True, True):
-                Tic = +qt * length / 2
+                Tic = qt * length / 2
                 Mic = 0
-                Tjc = +qt * length / 2
+                Tjc = qt * length / 2
                 Mjc = 0
 
         constants = np.array([0, Tic, Mic, 0, Tjc, Mjc], dtype=float)

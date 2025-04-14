@@ -102,16 +102,6 @@ class PointLoad():
         Restituisce:
             carichi equivalenti sui nodi i e j [Ni, Ti, Mi, Nj, Tj, Mj] in N e Nmm nel sistema globale
         """
-        # controlla che la lunghezza sia positiva
-        if length <= 0:
-            raise ValueError(
-                "length deve essere un valore positivo. length deve essere maggiore di 0"
-            )
-
-        if self.x > length:
-            raise ValueError(
-                "la ccordinata del carico concentrato x deve essere minore della lunghezza della trave"
-            )
         # estrai i carichi locali
         fn, ft = self.to_local(angle)
 

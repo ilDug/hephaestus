@@ -8,6 +8,7 @@ frame = Frame()
 
 m1 = select_material("S235")
 s1 = select_section("HEA100")
+s2 = select_section("HEA200")
 
 n1 = frame.add_node((0, 0))
 n2 = frame.add_node((500, 0))
@@ -35,6 +36,7 @@ frame.node(n3).set_restraints(True, True, True)
 
 b1.apply_distributed_load(qxi=0, qyi=-10)
 b2.apply_distributed_load(qxi=0, qyi=-10)
+
 
 sol = frame.solve()
 
