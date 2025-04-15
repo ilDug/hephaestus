@@ -5,7 +5,7 @@ from .external_load import ExternalLoad
 class DistributedLoad(ExternalLoad):
     """implementazione di ExternalLoad per un carico distribuito Costate"""
 
-    q: np.ndarray
+    P: np.ndarray
     """carico distribuito costante lungo la trave [qx, qy] in N/mm nelle coordinate globali"""
 
     def __init__(self, q: np.ndarray) -> None:
@@ -17,11 +17,11 @@ class DistributedLoad(ExternalLoad):
             raise ValueError(
                 "q deve essere un array di forma (2,). e deve contenre 2 valori [qx, qy]"
             )
-        self.q = q
+        self.P = q
 
     def __str__(self) -> str:
         """restituisce una stringa di rappresentazione della classe"""
-        return f"qx: {self.q[0]:.1f} kN/m | qy: {self.q[1]:.1f} kN/m"
+        return f"qx: {self.P[0]:.1f} kN/m | qy: {self.P[1]:.1f} kN/m"
 
     def solve(
         self,

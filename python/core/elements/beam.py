@@ -67,20 +67,13 @@ class Beam:
 
     def apply_distributed_load(
         self,
-        qxi: float = None,
-        qyi: float = None,
-        qxj: float = None,
-        qyj: float = None,
+        qx: float = None,
+        qy: float = None,
     ) -> "Beam":
         """applica un carico distribuito alla trave."""
-        # Se qj è nullo, lo imposta uguale a qi
-        if qxj is None:
-            qxj = qxi
-        if qyj is None:
-            qyj = qyi
 
         # genera un caico distribuito
-        self.dload = DistributedLoad(np.array([qxi, qyi, qxj, qyj], dtype=float))
+        self.dload = DistributedLoad(np.array([qx, qy], dtype=float))
         return self
 
     def apply_point_load(self, x: int, fx: float = None, fy: float = None) -> "Beam":
