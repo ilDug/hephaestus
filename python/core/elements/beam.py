@@ -7,7 +7,7 @@ from ..matrix import (
 )
 from ..materials import Material
 from ..sections import Section
-from ..loads import EquivalentLoad, PointLoad, DistributedLoad
+from ..loads import DistributedLoad, PointLoad, ExternalLoad
 
 
 class Beam:
@@ -33,7 +33,7 @@ class Beam:
     side: Literal["MAJOR", "MINOR"] = "MAJOR"
     """lato della sezione su cui si applica il carico"""
 
-    dload: DistributedLoad = None
+    dload: ExternalLoad = None
     """carichi distribuiti applicati alla trave"""
 
     def __init__(self, start: Node, end: Node):

@@ -32,6 +32,7 @@ class FrameSolution:
         save(): Saves the solution to a file.
         load(): Loads the solution from a file.
     """
+
     nodes: list[Node]
     """List of nodes in the frame."""
 

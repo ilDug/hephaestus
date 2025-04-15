@@ -2,7 +2,7 @@ import numpy as np
 from typing import Protocol
 
 
-class EquivalentLoad(Protocol):
+class ExternalLoad(Protocol):
     """
     Interfaccia per i carichi equivalenti sui nodi di una trave.
     La classe deve implementare il metodo solve() che calcola i carichi equivalenti

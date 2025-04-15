@@ -1,13 +1,13 @@
 import numpy as np
 
-class PointLoad():
-    """ implementaizone di EquivalentLoad per carichi concentrati
-    """
+
+class PointLoad:
+    """implementaizone di EquivalentLoad per carichi concentrati"""
 
     P: np.ndarray
     """ carico concentrato applicato in un punto della trave [fx, fy] in N nel sistema globale """
 
-    x : int 
+    x: int
     """ posizione del carico concentrato lungo la trave in mm a partire dal nodo i """
 
     def __init__(self, P: np.ndarray, x: int):
@@ -27,6 +27,9 @@ class PointLoad():
 
         self.P = P
         self.x = x
+
+    def __str__(self):
+        return f"x={self.P[0]} kN : y={self.P[1]} kN, x={self.x} mm"
 
     def to_local(self, angle: float) -> np.ndarray:
         """
@@ -102,13 +105,16 @@ class PointLoad():
         Restituisce:
             carichi equivalenti sui nodi i e j [Ni, Ti, Mi, Nj, Tj, Mj] in N e Nmm nel sistema globale
         """
+        l = length
+        a = self.x
+        b = l - a
         # estrai i carichi locali
         fn, ft = self.to_local(angle)
 
         # AZIONI LONGITUDINALI lungo l'asse della trave
         ##################################
-        Ni = fn/2
-        Nj = fn/2
+        Ni = fn / 2
+        Nj = fn / 2
         axial = np.array([Ni, 0, 0, Nj, 0, 0], dtype=float)
         # AZIONI TRASVERSALI normali all'asse della trave
         ##################################
@@ -116,31 +122,32 @@ class PointLoad():
         match releases:
             case (False, False):
                 # incastro-incastro
-                Ti = 0
-                Tj = 0
-                Mi = 0
-                Mj = 0
+                Ti = +((ft * b**2) / (l**3)) * (l + 2 * a)
+                Mi = +(ft * a * b**2) / l**2
+                Tj = +((ft * a**2) / (l**3)) * (l + 2 * b)
+                Mj = -(ft * a**2 * b) / l**2
 
             case (True, False):
                 # cerniera-incastro
-                Ti = 0
-                Tj = 0
+                Ti = +((ft * b**2) / (2 * l**3)) * (2 * l + a)
                 Mi = 0
-                Mj = 0
+                Tj = +((ft * a) / (2 * l)) * (3 - (a**2 / l**2))
+                Mj = -((ft * b * a) / (2 * l**2)) * (l + a)
 
             case (False, True):
                 # incastro-cerniera
-                Ti = 0
-                Tj = 0
-                Mi = 0
+                Ti = +((ft * b) / (2 * l)) * (3 - (b**2 / l**2))
+                Mi = +((ft * a * b) / (2 * l**2)) * (l + b)
+                Tj = +((ft * a**2) / (2 * l**3)) * (2 * l + b)
                 Mj = 0
 
             case (True, True):
                 # cerniera-cerniera
-                Ti = 0
-                Tj = 0
+                Ti = +ft * b / l
                 Mi = 0
+                Tj = +ft * a / l
                 Mj = 0
+
         transverse = np.array([0, Ti, Mi, 0, Tj, Mj], dtype=float)
 
         local_equivalent_loads = axial + transverse
