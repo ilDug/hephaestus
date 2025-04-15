@@ -33,15 +33,15 @@ class Beam:
     side: Literal["MAJOR", "MINOR"] = "MAJOR"
     """lato della sezione su cui si applica il carico"""
 
-    dload: ExternalLoad = None
-    """carichi distribuiti applicati alla trave"""
-
     def __init__(self, start: Node, end: Node):
         """crea una nuova trave tra due nodi"""
         self.i = start
         self.j = end
         self.L = ((self.j.x - self.i.x) ** 2 + (self.j.y - self.i.y) ** 2) ** (1 / 2)
         self.id = f"{self.i.id}-{self.j.id}"
+
+        self.ext_loads = []
+        """carichi esterni applicati alla trave"""
 
     def set_material(self, material: Material) -> "Beam":
         """imposta il materiale della trave"""
@@ -73,7 +73,8 @@ class Beam:
         """applica un carico distribuito alla trave."""
 
         # genera un caico distribuito
-        self.dload = DistributedLoad(np.array([qx, qy], dtype=float))
+        # self.dload = DistributedLoad(np.array([qx, qy], dtype=float))
+        self.ext_loads.append(DistributedLoad(np.array([qx, qy], dtype=float)))
         return self
 
     def apply_point_load(self, x: int, fx: float = None, fy: float = None) -> "Beam":
@@ -175,5 +176,7 @@ class Beam:
 
     def equivalent_loads(self) -> np.ndarray:
         """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti"""
-        L = self.dload.solve(self.L, self.rotation_angle(), self.releases)
+        L = np.zeros(6, dtype=float)
+        for load in self.ext_loads:
+            L += load.solve(self.L, self.rotation_angle(), self.releases)
         return L[:3], L[3:]  # carichi equivalenti sui nodi i e j
