@@ -143,14 +143,7 @@ def report_beam_table(frame: FrameSolution) -> str:
     # sesta riga: rilasci interni della trave
     X[:, 5] = [releases_(beam.releases) for beam in frame.B]
     # settima riga: carico distribuito della trave
-    # X[:, 6] = [
-    #     (
-    #         f"X: {beam.dload[0]}/{beam.dload[2]} kN/m | Y:{beam.dload[1]}/{beam.dload[3]} kN/m"
-    #         if beam.dload[2] != beam.dload[0] and beam.dload[3] != beam.dload[1]
-    #         else f"X: {beam.dload[0]} kN/m | Y:{beam.dload[1]} kN/m"
-    #     )
-    #     for beam in frame.B
-    # ]
+    X[:, 6] = [str(beam.dload) for beam in frame.B]
 
     # TABLE
     ############################

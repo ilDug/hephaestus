@@ -29,12 +29,12 @@ class Frame:
 
     def node(self, n: int) -> Node:
         """Restituisce il nodo con ID n"""
-        return next(node for node in self.nodes if node.id == n)
+        return next((node for node in self.nodes if node.id == n), None)
 
     def beam(self, n1: int, n2: int) -> Beam:
         """Restituisce il beam con nodi n1 e n2"""
         names = [f"{n1}-{n2}", f"{n2}-{n1}"]
-        return next(beam for beam in self.beams if beam.id in names)
+        return next((beam for beam in self.beams if beam.id in names), None)
 
     def restraints(self, by_node: bool = True) -> np.ndarray:
         """Returns the restraints matrix for the frame"""

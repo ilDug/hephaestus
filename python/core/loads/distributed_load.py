@@ -7,18 +7,6 @@ class DistributedLoad:
     q: np.ndarray
     """carico distribuito costante lungo la trave [qxi, qyi, qxj, qyj] in N/mm nelle coordinate globali"""
 
-    # def __init__(self, length:int, angle: float,  releases: tuple[bool, bool] = (False, False)):
-    #     """
-    #     Inizializza la classe con la lunghezza della trave e l'angolo di inclinazione e i rilasci nodali.
-    #     La lunghezza della trave è in mm, l'angolo è in radianti.
-    #     I rilasci si rifieriscono ai nodi i e j della trave.
-    #     Se il rilascio è True, il nodo è una cerniera.
-    #     Se il rilascio è False, il nodo è un incastro.
-    #     """
-    #     self.length = length
-    #     self.angle = angle
-    #     self.releases = releases
-
     def __init__(self, q: np.ndarray) -> None:
         """
         Inizializza la classe con i carichi distribuiti costanti [qxi, qyi, qxj, qyj] in N/mm nel sistema globale
@@ -29,6 +17,14 @@ class DistributedLoad:
                 "q deve essere un array di forma (4,). e deve contenre 4 valori [qxi, qyi, qxj, qyj]"
             )
         self.q = q
+
+    def __str__(self) -> str:
+        """restituisce una stringa di rappresentazione della classe"""
+        return (
+            f"qxi={self.q[0]}:qyi={self.q[1]} kN/m | qxj={self.q[2]}:qyj={self.q[3]} kN/m"
+            if self.q[0] != self.q[2] or self.q[1] != self.q[3]
+            else f"qxi={self.q[0]}:qyi={self.q[1]} kN/m"
+        )
 
     def to_local(self, angle: float) -> np.ndarray:
         """

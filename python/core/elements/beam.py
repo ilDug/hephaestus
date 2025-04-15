@@ -4,11 +4,11 @@ from .node import Node
 from ..matrix import (
     generate_stiffness_matrix_2d,
     generate_rotation_matrix_2d,
-    distributed_loads_rotation_matrix_2d,
 )
 from ..materials import Material
 from ..sections import Section
 from ..loads import EquivalentLoad, PointLoad, DistributedLoad
+
 
 class Beam:
     id: str
@@ -33,8 +33,8 @@ class Beam:
     side: Literal["MAJOR", "MINOR"] = "MAJOR"
     """lato della sezione su cui si applica il carico"""
 
-    external_loads: list[EquivalentLoad] = []
-    """lista dei carichi esterni applicati alla trave"""
+    dload: DistributedLoad = None
+    """carichi distribuiti applicati alla trave"""
 
     def __init__(self, start: Node, end: Node):
         """crea una nuova trave tra due nodi"""
@@ -72,14 +72,7 @@ class Beam:
         qxj: float = None,
         qyj: float = None,
     ) -> "Beam":
-        """applica un carico distribuito in direzione perpendicolare alla trave
-        - qi: carico distribuito iniziale in kN/m
-        - qj: carico distribuito finale in kN/m
-        """
-        # controlla se il carico è nullo
-        if qxi is None and qyi is None:
-            raise ValueError("carico nullo")
-
+        """applica un carico distribuito alla trave."""
         # Se qj è nullo, lo imposta uguale a qi
         if qxj is None:
             qxj = qxi
@@ -87,9 +80,7 @@ class Beam:
             qyj = qyi
 
         # genera un caico distribuito
-        dload = DistributedLoad(np.array([qxi, qyi, qxj, qyj], dtype=float))
-        self.external_loads.append(dload)
-        print(f"carico distribuito {dload.q} kN/m applicato alla trave {self.id}")
+        self.dload = DistributedLoad(np.array([qxi, qyi, qxj, qyj], dtype=float))
         return self
 
     def apply_point_load(self, x: int, fx: float = None, fy: float = None) -> "Beam":
@@ -191,10 +182,5 @@ class Beam:
 
     def equivalent_loads(self) -> np.ndarray:
         """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti"""
-        L = np.zeros(6, dtype=float)
-        for load in self.external_loads:
-            # calcola i carichi equivalenti sui nodi della trave
-            # usando la matrice di rigidezza locale e la matrice di rotazione
-            L += load.solve(self.L, self.rotation_angle(), self.releases)
-
+        L = self.dload.solve(self.L, self.rotation_angle(), self.releases)
         return L[:3], L[3:]  # carichi equivalenti sui nodi i e j
