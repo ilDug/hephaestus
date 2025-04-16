@@ -98,7 +98,7 @@ class Beam:
 
         # genera un carico puntuale
         pload = PointLoad(np.array([fx, fy], dtype=float), x)
-        self.external_loads.append(pload)
+        self.ext_loads.append(pload)
         return self
 
     def stiffness_matrix_local(self) -> np.ndarray:
