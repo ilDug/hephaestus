@@ -387,20 +387,20 @@ def stiffness_matrix_2d_hinged_hinged_beam(
     # ##########################################################################
     # reazioni dovute allo traslazione trasverale del nodo i
     Knivi = 0
-    Ktivi = None  # diagonale
-    Kmivi = None
+    Ktivi = 0  # diagonale
+    Kmivi = 0
     Knjvi = 0
-    Ktjvi = None
-    Kmjvi = None
+    Ktjvi = 0
+    Kmjvi = 0
 
     # ##########################################################################
     # reazioni dovute alla rotazione del nodo i
     Kniri = 0
-    Ktiri = None
-    Kmiri = None  # diagonale
+    Ktiri = 0
+    Kmiri = 0  # diagonale
     Knjri = 0
-    Ktjri = None
-    Kmjri = None
+    Ktjri = 0
+    Kmjri = 0
 
     # ##########################################################################
     # reazioni dovute allo spostamento assiale del nodo j
@@ -414,20 +414,20 @@ def stiffness_matrix_2d_hinged_hinged_beam(
     # ##########################################################################
     # reazioni dovute alla traslazione trasversale del nodo j
     Knivj = 0
-    Ktivj = None
-    Kmivj = None
+    Ktivj = 0
+    Kmivj = 0
     Knjvj = 0
-    Ktjvj = None  # diagonale
-    Kmjvj = None
+    Ktjvj = 0  # diagonale
+    Kmjvj = 0
 
     # ##########################################################################
     # reazioni dovute alla rotazione del nodo j
     Knirj = 0
-    Ktirj = None
-    Kmirj = None
+    Ktirj = 0
+    Kmirj = 0
     Knjrj = 0
-    Ktjrj = None
-    Kmjrj = None  # diagonale
+    Ktjrj = 0
+    Kmjrj = 0  # diagonale
 
     stiffness_matrix = np.array(
         [

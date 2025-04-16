@@ -79,9 +79,9 @@ def report_node_table(frame: FrameSolution) -> str:
     # terza riga: vincoli del nodo
     X[:, 2] = [restraints_(*node.restraints) for node in frame.N]
     # quarta riga: reazioni orizzontali del nodo
-    X[:, 3] = [f"{(float(frame.R[i,0]))/1000:.1f} kN" for i in range(n)]
+    X[:, 3] = [f"{(float(frame.R[i,0]))/1000:.2f} kN" for i in range(n)]
     # quinta riga: reazioni verticali del nodo
-    X[:, 4] = [f"{(float(frame.R[i,1]))/1000:.1f} kN" for i in range(n)]
+    X[:, 4] = [f"{(float(frame.R[i,1]))/1000:.2f} kN" for i in range(n)]
     # sesta riga: reazioni momenti del nodo
     X[:, 5] = [f"{(float(frame.R[i,2]))/1000000:.2f} kNm" for i in range(n)]
     # settima riga: azioni orizzontali del nodo
