@@ -17,11 +17,6 @@ class MomentumLoad(ExternalLoad):
             x: posizione del carico concentrato lungo la trave in mm a partire dal nodo i
             M: momento applicato in un punto della trave in Nmm
         """
-        if x < 0:
-            raise ValueError(
-                "x deve essere un valore positivo. x deve essere maggiore di 0"
-            )
-
         self.x = x
         self.M = M
 
@@ -48,19 +43,19 @@ class MomentumLoad(ExternalLoad):
                 Tj = +6 * M * a * b / l**3
                 Mj = -M * a / l * (2 - 3 * a / l)
             case (True, False):
-                Ti = 0
+                Ti = -3 * M / (2 * l) * (1 - (a**2 / l**2))
                 Mi = 0
-                Tj = 0
-                Mj = 0
+                Tj = +3 * M / (2 * l) * (1 - (a**2 / l**2))
+                Mj = -M / 2 * (1 - 3 * (a**2 / l**2))
             case (False, True):
-                Ti = 3 * M * (1 - (b**2 / l**2)) / (2 * l)
-                Mi = M * (1 - 3 * (b**2 / l**2)) / 2
-                Tj = -Ti
+                Ti = -3 * M / (2 * l) * (1 - (b**2 / l**2))
+                Mi = -M / 2 * (1 - 3 * (b**2 / l**2))
+                Tj = +3 * M / (2 * l) * (1 - (b**2 / l**2))
                 Mj = 0
             case (True, True):
-                Ti = 0
+                Ti = -M / l
                 Mi = 0
-                Tj = 0
+                Tj = M / l
                 Mj = 0
 
         local_eq_loads = np.array([Ni, Ti, Mi, Nj, Tj, Mj], dtype=float)

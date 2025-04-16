@@ -19,7 +19,7 @@ b1 = (
     frame.add_beam(n1, n2)
     .set_material(m1)
     .set_section(s1)
-    .set_internal_releases(i=True, j=False)
+    .set_internal_releases(i=True, j=True)
     # .set_side("MINOR")
 )
 # b2 = (
@@ -39,7 +39,8 @@ frame.node(n2).set_restraints(True, True, True)
 
 # b1.apply_distributed_load(qx=0, qy=-10)
 # b2.apply_distributed_load(qx=0, qy=-10)
-b1.apply_point_load(fy=-1, x=300)
+# b1.apply_point_load(fy=-1, x=300)
+b1.apply_momentum_load(x=300, M=1)
 
 
 sol = frame.solve()

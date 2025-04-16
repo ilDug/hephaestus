@@ -7,7 +7,7 @@ from ..matrix import (
 )
 from ..materials import Material
 from ..sections import Section
-from ..loads import DistributedLoad, PointLoad, ExternalLoad
+from ..loads import DistributedLoad, PointLoad, MomentumLoad, ExternalLoad
 
 
 class Beam:
@@ -40,7 +40,7 @@ class Beam:
         self.L = ((self.j.x - self.i.x) ** 2 + (self.j.y - self.i.y) ** 2) ** (1 / 2)
         self.id = f"{self.i.id}-{self.j.id}"
 
-        self.ext_loads = []
+        self.ext_loads: list[ExternalLoad] = []
         """carichi esterni applicati alla trave"""
 
     def set_material(self, material: Material) -> "Beam":
@@ -99,6 +99,26 @@ class Beam:
         # genera un carico puntuale
         pload = PointLoad(np.array([fx, fy], dtype=float), x)
         self.ext_loads.append(pload)
+        return self
+
+    def apply_momentum_load(self, x: int, M: float) -> "Beam":
+        """applica un momento alla trave.
+        M: momento in kNm
+        x: posizione del carico lungo la trave in mm
+        """
+        # controlla se il carico è  nullo
+        if not M:
+            raise ValueError("carico nullo")
+        if x > self.L:
+            raise ValueError(
+                "la posizione del carico deve essere minore della lunghezza della trave"
+            )
+        if x < 0:
+            raise ValueError("la posizione del carico deve essere maggiore di 0")
+        # genera un carico puntuale
+        m = M * 1000000 if M else 0
+        mload = MomentumLoad(x, m)
+        self.ext_loads.append(mload)
         return self
 
     def stiffness_matrix_local(self) -> np.ndarray:
@@ -175,7 +195,7 @@ class Beam:
         return generate_rotation_matrix_2d(angle)
 
     def equivalent_loads(self) -> np.ndarray:
-        """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi distribuiti"""
+        """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi sull'elemento"""
         L = np.zeros(6, dtype=float)
         for load in self.ext_loads:
             L += load.solve(self.L, self.rotation_angle(), self.releases)
