@@ -4,7 +4,7 @@
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{geometry}
-\geometry{a4paper,vmargin=1in,hmargin=1.5in}
+\geometry{a4paper,vmargin=1in,hmargin=2in}
 
 
 \title{Calcolo strutturale automatizzato}
@@ -90,7 +90,7 @@ La matrice delle rigidezze può essere riferita a diverse configurazioni in base
         \end{bmatrix}
 \end{equation}
 
-
+\noindent\rule{\textwidth}{0.4pt}
 
 \vspace{1em}
 \textbf{INCASTRO-CERNIERA}
@@ -128,6 +128,7 @@ La matrice delle rigidezze locali deve essere trasformata nel sistema di riferim
 
 \begin{equation}
 \mathbf{K}_{global} = \mathbf{R}^T \mathbf{K}_{local} \mathbf{R}
+\label{eq:global_stiffness_formula}
 \end{equation}
 
 Dove $\mathbf{R}$ è la matrice di rotazione definita come:
@@ -148,9 +149,14 @@ Dove $\theta$ è l'angolo di inclinazione inorno all'asse Z.
 La matrice delle rigidezze locali è una matrice $6 \times 6$ che rappresenta la relazione tra le forze e gli spostamenti in corrispondenza di un nodo dell'elemento. 
 
 \section{Matrice delle rigidezze globale}
+\footnote{La matrice delle rigidezze globale è una matrice che rappresenta la relazione tra le forze e gli spostamenti in corrispondenza di tutti i nodi del sistema. Essa viene ottenuta sommando le matrici delle rigidezze locali di tutti gli elementi del sistema.}
+
 La matrice delle rigidezze globale del sistema è ottenuta sommando le matrici delle rigidezze di tutti gli elementi. La matrice globale è una matrice $n \times n$, dove $n$ è il numero totale dei gradi di libertà del sistema.
 
 Per comporla bisogna prima ruotare tutte le matrici delle rigidezze locali nel sistema di riferimento globale e poi assemblare le matrici in un'unica matrice globale. Utilizzando  la numerazione dei nodi è facile intuire  in quale posizione della matrice debba essere posizionato un valore e sommarlo a quelli già esistenti,  utilizzando la numerazione dei nodi come guida per l'individazione della posizione.
+
+La rotazione della matrice locale di ogni elemento è necessaria per garantire che le forze e gli spostamenti siano espressi nel sistema di riferimento globale. La matrice di trasformazione $\mathbf{R}$ è una matrice $6 \times 6$ che ruota le forze e gli spostamenti dal sistema locale al sistema globale(vedi Eq.~\ref{eq:global_stiffness_formula}).
+
 
 
 
