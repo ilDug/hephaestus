@@ -37,10 +37,8 @@ np.set_printoptions(precision=3, suppress=True)
 
 for beam in frame.beams:
     print(beam.id, beam.L, beam.E, beam.A, beam.Ix, beam.Iy)
-    angle_pi_format = f"{b1.rotation_angle() / np.pi:.2f}π"
-    angle_fraction_format = (
-        f"{Fraction(b1.rotation_angle() / np.pi).limit_denominator()}π"
-    )
+    angle_pi_format = f"{b1.angle() / np.pi:.2f}π"
+    angle_fraction_format = f"{Fraction(b1.angle() / np.pi).limit_denominator()}π"
     print(f"Rotation angle in π format: {angle_pi_format}")
     print(f"Rotation angle in π  fractional format: {angle_fraction_format}")
     print(f"Stiffness matrix for beams `{beam.id}`:")

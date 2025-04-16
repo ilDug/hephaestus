@@ -1,5 +1,6 @@
 import numpy as np
 from abc import ABC, abstractmethod
+from ..matrices import RotationMatrix2D
 
 
 class ExternalLoad(ABC):
@@ -33,21 +34,11 @@ class ExternalLoad(ABC):
         Ruota i carichi globali nel sistema locale della trave.
         [fx, fy] => [fn, ft]
         """
-
-        c = np.cos(angle)
-        s = np.sin(angle)
-
-        # matrice di rotazione per il carico concentrato
-        R = np.array(
-            [
-                [c, s],
-                [-s, c],
-            ],
-            dtype=float,
-        )
+        P: np.ndarray = self.P
         # calcola i carichi ruotati nel sistema locale della trave
+        R = RotationMatrix2D().x2(angle)
         # [fx, fy] => [fn, ft]
-        local_loads = R @ self.P.reshape(-1, 1)
+        local_loads = R @ P.reshape(-1, 1)
         # il vettore dei carichi deve essere un  vettore con una sola riga
         local_loads = local_loads.flatten()
         return local_loads
@@ -63,22 +54,8 @@ class ExternalLoad(ABC):
                 "loads deve essere un array di forma (6,). e deve contenre 6 valori [Ni, Ti, Mi, Nj, Tj, Mj]"
             )
 
-        c = np.cos(angle)
-        s = np.sin(angle)
-
-        R = np.array(
-            [
-                [c, s, 0, 0, 0, 0],
-                [-s, c, 0, 0, 0, 0],
-                [0, 0, 1, 0, 0, 0],
-                [0, 0, 0, c, s, 0],
-                [0, 0, 0, -s, c, 0],
-                [0, 0, 0, 0, 0, 1],
-            ],
-            dtype=float,
-        )
-
         # calcola i carichi ruotati nel sistema globale della trave
+        R = RotationMatrix2D.x6(angle)
         # [Ni, Ti, Mi, Nj, Tj, Mj] => [Xi, Yi, Mi, Xj, Vj, Mj]
         global_loads = R @ loads.reshape(-1, 1)
         # il vettore dei carichi deve essere un  vettore con una sola riga
