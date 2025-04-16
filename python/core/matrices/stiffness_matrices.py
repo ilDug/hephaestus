@@ -1,0 +1,365 @@
+import numpy as np
+
+
+class StiffnessMatrix2D:
+    """
+    Generates the stiffness matrix for a beam element based on its material
+    and geometric properties.
+    Parameters:
+        E (int): Young's modulus of the material (elastic modulus) in MPa.
+        A (int): Cross-sectional area of the beam in mm2.
+        I (int): Moment of inertia of the beam's cross-section in mm4.
+        L (float): Length of the beam in mm.
+        rel_i (bool): Indicates if the initial node is released (default: False).
+        rel_j (bool): Indicates if the final node is released (default: False).
+    Returns:
+        numpy.ndarray: A 6x6 stiffness matrix representing the beam's
+        stiffness in local coordinates.
+    Raises:
+        ValueError: If any of the input parameters (E, A, I, L) are None.
+    Notes:
+        The stiffness matrix is calculated based on the beam's axial,
+        shear, and bending properties. The matrix is symmetric and
+        represents the relationship between forces/moments and
+        displacements/rotations at the beam's two ends.
+    Symbols:
+        i: Initial node of the beam.
+        j: Final node of the beam.
+        Kn: Axial stiffness.
+        Kt: Shear stiffness.
+        Km: Bending stiffness.
+        u: Displacement in the axial direction.
+        v: Displacement in the transverse direction.
+        r: Rotation.
+    """
+
+    def __init__(self, E: float, A: float, I: float, L: float):
+        self.E = E
+        self.A = A
+        self.I = I
+        self.L = L
+
+    def with_release(
+        self, releases: tuple[bool, bool] = (False, False)
+    ) -> "StiffnessMatrix2D":
+        """setta i rilasci interni della trave"""
+        self.releases = releases
+        return self
+
+    def matrix(self) -> np.ndarray:
+        """
+        Generates the stiffness matrix based on the release conditions.
+        """
+        match self.releases:
+            case (False, False):
+                return self.fixed_fixed(self.E, self.A, self.I, self.L)
+            case (True, False):
+                return self.hinged_fixed(self.E, self.A, self.I, self.L)
+            case (False, True):
+                return self.fixed_hinged(self.E, self.A, self.I, self.L)
+            case (True, True):
+                return self.hinged_hinged(self.E, self.A, self.I, self.L)
+
+    def fixed_fixed(self, E: float, A: float, I: float, L: float) -> np.ndarray:
+        """
+        Generates the stiffness matrix for a fixed-fixed beam element
+        """
+        # ogni gruppo rappresenta una colonna della matrice di rigidezza
+
+        # reazioni dovute allo spostamento assiale del nodo i
+        Kniui = E * A / L  # diagonale
+        Ktiui = 0
+        Kmiui = 0
+        Knjui = -E * A / L
+        Ktjui = 0
+        Kmjui = 0
+
+        # ##########################################################################
+        # reazioni dovute allo traslazione trasverale del nodo i
+        Knivi = 0
+        Ktivi = 12 * E * I / L**3  # diagonale
+        Kmivi = 6 * E * I / L**2
+        Knjvi = 0
+        Ktjvi = -12 * E * I / L**3
+        Kmjvi = 6 * E * I / L**2
+
+        # ##########################################################################
+        # reazioni dovute alla rotazione del nodo i
+        Kniri = 0
+        Ktiri = 6 * E * I / L**2
+        Kmiri = 4 * E * I / L  # diagonale
+        Knjri = 0
+        Ktjri = -6 * E * I / L**2
+        Kmjri = 2 * E * I / L
+
+        # ##########################################################################
+        # reazioni dovute allo spostamento assiale del nodo j
+        Kniuj = -E * A / L
+        Ktiuj = 0
+        Kmiuj = 0
+        Knjuj = E * A / L  # diagonale
+        Ktjuj = 0
+        Kmjuj = 0
+
+        # ##########################################################################
+        # reazioni dovute alla traslazione trasversale del nodo j
+        Knivj = 0
+        Ktivj = -12 * E * I / L**3
+        Kmivj = -6 * E * I / L**2
+        Knjvj = 0
+        Ktjvj = 12 * E * I / L**3  # diagonale
+        Kmjvj = -6 * E * I / L**2
+
+        # ##########################################################################
+        # reazioni dovute alla rotazione del nodo j
+        Knirj = 0
+        Ktirj = 6 * E * I / L**2
+        Kmirj = 2 * E * I / L
+        Knjrj = 0
+        Ktjrj = -6 * E * I / L**2
+        Kmjrj = 4 * E * I / L  # diagonale
+
+        stiffness_matrix = np.array(
+            [
+                [Kniui, Knivi, Kniri, Kniuj, Knivj, Knirj],
+                [Ktiui, Ktivi, Ktiri, Ktiuj, Ktivj, Ktirj],
+                [Kmiui, Kmivi, Kmiri, Kmiuj, Kmivj, Kmirj],
+                [Knjui, Knjvi, Knjri, Knjuj, Knjvj, Knjrj],
+                [Ktjui, Ktjvi, Ktjri, Ktjuj, Ktjvj, Ktjrj],
+                [Kmjui, Kmjvi, Kmjri, Kmjuj, Kmjvj, Kmjrj],
+            ],
+            dtype=float,
+        )
+
+        return stiffness_matrix
+
+    # --------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------
+
+    def fixed_hinged(self, E: float, A: float, I: float, L: float) -> np.ndarray:
+        """
+        Generates the stiffness matrix for a fixed-hinged beam element
+        """
+        # ogni gruppo rappresenta una colonna della matrice di rigidezza
+
+        # reazioni dovute allo spostamento assiale del nodo i
+        Kniui = E * A / L  # diagonale
+        Ktiui = 0
+        Kmiui = 0
+        Knjui = -E * A / L
+        Ktjui = 0
+        Kmjui = 0
+
+        # ##########################################################################
+        # reazioni dovute allo traslazione trasverale del nodo i
+        Knivi = 0
+        Ktivi = 3 * E * I / L**3  # diagonale
+        Kmivi = 3 * E * I / L**2
+        Knjvi = 0
+        Ktjvi = -3 * E * I / L**3
+        Kmjvi = 0
+
+        # ##########################################################################
+        # reazioni dovute alla rotazione del nodo i
+        Kniri = 0
+        Ktiri = 3 * E * I / L**2
+        Kmiri = 3 * E * I / L  # diagonale
+        Knjri = 0
+        Ktjri = -3 * E * I / L**2
+        Kmjri = 0
+
+        # ##########################################################################
+        # reazioni dovute allo spostamento assiale del nodo j
+        Kniuj = -E * A / L
+        Ktiuj = 0
+        Kmiuj = 0
+        Knjuj = E * A / L  # diagonale
+        Ktjuj = 0
+        Kmjuj = 0
+
+        # ##########################################################################
+        # reazioni dovute alla traslazione trasversale del nodo j
+        Knivj = 0
+        Ktivj = -3 * E * I / L**3
+        Kmivj = -3 * E * I / L**2
+        Knjvj = 0
+        Ktjvj = 3 * E * I / L**3  # diagonale
+        Kmjvj = 0
+
+        # ##########################################################################
+        # reazioni dovute alla rotazione del nodo j
+        Knirj = 0
+        Ktirj = 0
+        Kmirj = 0
+        Knjrj = 0
+        Ktjrj = 0
+        Kmjrj = 0  # diagonale
+
+        stiffness_matrix = np.array(
+            [
+                [Kniui, Knivi, Kniri, Kniuj, Knivj, Knirj],
+                [Ktiui, Ktivi, Ktiri, Ktiuj, Ktivj, Ktirj],
+                [Kmiui, Kmivi, Kmiri, Kmiuj, Kmivj, Kmirj],
+                [Knjui, Knjvi, Knjri, Knjuj, Knjvj, Knjrj],
+                [Ktjui, Ktjvi, Ktjri, Ktjuj, Ktjvj, Ktjrj],
+                [Kmjui, Kmjvi, Kmjri, Kmjuj, Kmjvj, Kmjrj],
+            ],
+            dtype=float,
+        )
+
+        return stiffness_matrix
+
+    # --------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------
+
+    def hinged_fixed(self, E: float, A: float, I: float, L: float) -> np.ndarray:
+        """
+        Generates the stiffness matrix for a hinged-fixed beam element
+        """
+        # ogni gruppo rappresenta una colonna della matrice di rigidezza
+
+        # reazioni dovute allo spostamento assiale del nodo i
+        Kniui = E * A / L  # diagonale
+        Ktiui = 0
+        Kmiui = 0
+        Knjui = -E * A / L
+        Ktjui = 0
+        Kmjui = 0
+
+        # ##########################################################################
+        # reazioni dovute allo traslazione trasverale del nodo i
+        Knivi = 0
+        Ktivi = 3 * E * I / L**3  # diagonale
+        Kmivi = 0
+        Knjvi = 0
+        Ktjvi = -3 * E * I / L**3
+        Kmjvi = 3 * E * I / L**2
+
+        # ##########################################################################
+        # reazioni dovute alla rotazione del nodo i
+        Kniri = 0
+        Ktiri = 0
+        Kmiri = 0  # diagonale
+        Knjri = 0
+        Ktjri = 0
+        Kmjri = 0
+
+        # ##########################################################################
+        # reazioni dovute allo spostamento assiale del nodo j
+        Kniuj = -E * A / L
+        Ktiuj = 0
+        Kmiuj = 0
+        Knjuj = E * A / L  # diagonale
+        Ktjuj = 0
+        Kmjuj = 0
+
+        # ##########################################################################
+        # reazioni dovute alla traslazione trasversale del nodo j
+        Knivj = 0
+        Ktivj = -3 * E * I / L**3
+        Kmivj = 0
+        Knjvj = 0
+        Ktjvj = 3 * E * I / L**3  # diagonale
+        Kmjvj = -3 * E * I / L**2
+
+        # ##########################################################################
+        # reazioni dovute alla rotazione del nodo j
+        Knirj = 0
+        Ktirj = 3 * E * I / L**2
+        Kmirj = 0
+        Knjrj = 0
+        Ktjrj = -3 * E * I / L**2
+        Kmjrj = 3 * E * I / L  # diagonale
+
+        stiffness_matrix = np.array(
+            [
+                [Kniui, Knivi, Kniri, Kniuj, Knivj, Knirj],
+                [Ktiui, Ktivi, Ktiri, Ktiuj, Ktivj, Ktirj],
+                [Kmiui, Kmivi, Kmiri, Kmiuj, Kmivj, Kmirj],
+                [Knjui, Knjvi, Knjri, Knjuj, Knjvj, Knjrj],
+                [Ktjui, Ktjvi, Ktjri, Ktjuj, Ktjvj, Ktjrj],
+                [Kmjui, Kmjvi, Kmjri, Kmjuj, Kmjvj, Kmjrj],
+            ],
+            dtype=float,
+        )
+
+        return stiffness_matrix
+
+    # --------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------
+    # --------------------------------------------------------------------------------
+
+    def hinged_hinged(self, E: float, A: float, I: float, L: float) -> np.ndarray:
+        """
+        Generates the stiffness matrix for a hinged-hinged beam element
+        """
+        # ogni gruppo rappresenta una colonna della matrice di rigidezza
+
+        # reazioni dovute allo spostamento assiale del nodo i
+        Kniui = E * A / L  # diagonale
+        Ktiui = 0
+        Kmiui = 0
+        Knjui = -E * A / L
+        Ktjui = 0
+        Kmjui = 0
+
+        # ##########################################################################
+        # reazioni dovute allo traslazione trasverale del nodo i
+        Knivi = 0
+        Ktivi = 0  # diagonale
+        Kmivi = 0
+        Knjvi = 0
+        Ktjvi = 0
+        Kmjvi = 0
+
+        # ##########################################################################
+        # reazioni dovute alla rotazione del nodo i
+        Kniri = 0
+        Ktiri = 0
+        Kmiri = 0  # diagonale
+        Knjri = 0
+        Ktjri = 0
+        Kmjri = 0
+
+        # ##########################################################################
+        # reazioni dovute allo spostamento assiale del nodo j
+        Kniuj = -E * A / L
+        Ktiuj = 0
+        Kmiuj = 0
+        Knjuj = E * A / L  # diagonale
+        Ktjuj = 0
+        Kmjuj = 0
+
+        # ##########################################################################
+        # reazioni dovute alla traslazione trasversale del nodo j
+        Knivj = 0
+        Ktivj = 0
+        Kmivj = 0
+        Knjvj = 0
+        Ktjvj = 0  # diagonale
+        Kmjvj = 0
+
+        # ##########################################################################
+        # reazioni dovute alla rotazione del nodo j
+        Knirj = 0
+        Ktirj = 0
+        Kmirj = 0
+        Knjrj = 0
+        Ktjrj = 0
+        Kmjrj = 0  # diagonale
+
+        stiffness_matrix = np.array(
+            [
+                [Kniui, Knivi, Kniri, Kniuj, Knivj, Knirj],
+                [Ktiui, Ktivi, Ktiri, Ktiuj, Ktivj, Ktirj],
+                [Kmiui, Kmivi, Kmiri, Kmiuj, Kmivj, Kmirj],
+                [Knjui, Knjvi, Knjri, Knjuj, Knjvj, Knjrj],
+                [Ktjui, Ktjvi, Ktjri, Ktjuj, Ktjvj, Ktjrj],
+                [Kmjui, Kmjvi, Kmjri, Kmjuj, Kmjvj, Kmjrj],
+            ],
+            dtype=float,
+        )
+
+        return stiffness_matrix

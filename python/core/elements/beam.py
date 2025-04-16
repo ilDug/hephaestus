@@ -1,10 +1,7 @@
 from typing import Annotated, Literal
 import numpy as np
 from .node import Node
-from ..matrix import (
-    generate_stiffness_matrix_2d,
-    generate_rotation_matrix_2d,
-)
+from ..matrices import RotationMatrix2D, StiffnessMatrix2D
 from ..materials import Material
 from ..sections import Section
 from ..loads import DistributedLoad, PointLoad, MomentumLoad, ExternalLoad
@@ -121,32 +118,17 @@ class Beam:
         self.ext_loads.append(mload)
         return self
 
-    def stiffness_matrix_local(self) -> np.ndarray:
-        """genera la matrice di rigidezza locale della trave"""
-        try:
-            inertial_momentum = (
-                self.section.Iy if self.side == "MAJOR" else self.section.Iz
-            )
-            # calcola la matrice di rigidezza locale della trave
-            # usando le proprietà della sezione e del materiale
-            K = generate_stiffness_matrix_2d(
-                self.material.E,
-                self.section.A,
-                inertial_momentum,
-                self.L,
-                self.releases,
-            )
-            return K
-        except Exception as e:
-            err = f"BEAM CLASS: error generating local stiffness matrix for beam {self.id}: {e}"
-            print(err)
-            raise Exception(err)
-
     def stiffness_matrix(self) -> np.ndarray:
         """genera la matrice di rigidezza della trave ruotata nel sistema globale"""
         try:
-            K = self.stiffness_matrix_local()  # stiffness matrix locale
-            R = self.rotation_matrix()  # rotation matrix
+            # calcola il moment odi inerzia della sezione in base al lato su cui si applica il carico
+            I = self.section.Iy if self.side == "MAJOR" else self.section.Iz
+            A = self.section.A
+            E = self.material.E
+            L = self.L
+            # stiffness matrix locale
+            K = StiffnessMatrix2D(E, A, I, L).with_release(self.releases).matrix()
+            R = RotationMatrix2D.x6(self.angle())  # rotation matrix
             # stiffness matrix trasformata nel sistema globale usando la matrice di rotazione
             G = R.T @ K @ R  # [Kg] = [R]^T * [K] * [R]
             return G  # local stiffness matrix in the global system
@@ -155,7 +137,7 @@ class Beam:
             print(err)
             raise Exception(err)
 
-    def rotation_angle(self) -> float:
+    def angle(self) -> float:
         """calcola l'angolo di rotazione della trave in radianti"""
         dx = self.j.x - self.i.x
         dy = self.j.y - self.i.y
@@ -189,14 +171,9 @@ class Beam:
         if dx > 0 and dy < 0:  # quarto quadrante
             return 2 * np.pi + np.arctan(dy / dx)
 
-    def rotation_matrix(self) -> np.ndarray:
-        """genera la matrice di rotazione della trave"""
-        angle = self.rotation_angle()
-        return generate_rotation_matrix_2d(angle)
-
     def equivalent_loads(self) -> np.ndarray:
         """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi sull'elemento"""
         L = np.zeros(6, dtype=float)
         for load in self.ext_loads:
-            L += load.solve(self.L, self.rotation_angle(), self.releases)
+            L += load.solve(self.L, self.angle(), self.releases)
         return L[:3], L[3:]  # carichi equivalenti sui nodi i e j
