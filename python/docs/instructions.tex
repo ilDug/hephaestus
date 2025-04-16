@@ -107,6 +107,22 @@ La matrice delle rigidezze può essere riferita a diverse configurazioni in base
         \end{bmatrix}
 \end{equation}
 
+
+\vspace{1em}
+\textbf{CERNIERA-CERNIERA}
+
+\begin{equation}
+    \mathbf[K_{\odot-\odot}] =
+        \begin{bmatrix}
+            \frac{EA}{L} & 0 & 0 & -\frac{EA}{L} & 0 & 0 \\[10pt]
+            0 & 0 & 0 & 0 & 0 & 0 \\[10pt]
+            0 & 0 & 0 & 0 & 0 & 0 \\[10pt]
+            -\frac{EA}{L} & 0 & 0 & \frac{EA}{L} & 0 & 0 \\[10pt]
+            0 & 0 & 0 & 0 & 0 & 0 \\[10pt]
+            0 & 0 & 0 & 0 & 0 & 0
+        \end{bmatrix}
+\end{equation}
+
 \section{Matrice di Trasformazione}
 La matrice delle rigidezze locali deve essere trasformata nel sistema di riferimento globale. Questa trasformazione avviene utilizzando una matrice di rotazione $\mathbf{R}$, che dipende dall'orientamento dell'elemento.
 
@@ -128,9 +144,8 @@ Dove $\mathbf{R}$ è la matrice di rotazione definita come:
 \end{bmatrix}
 \end{equation}
 
-Dove $\theta$ è l'angolo di inclinazione dell'elemento rispetto all'asse globale.
-La matrice delle rigidezze locali è una matrice $6 \times 6$ che rappresenta la relazione tra le forze e gli spostamenti in corrispondenza di un nodo dell'elemento.
-
+Dove $\theta$ è l'angolo di inclinazione inorno all'asse Z.
+La matrice delle rigidezze locali è una matrice $6 \times 6$ che rappresenta la relazione tra le forze e gli spostamenti in corrispondenza di un nodo dell'elemento. 
 
 \section{Matrice delle rigidezze globale}
 La matrice delle rigidezze globale del sistema è ottenuta sommando le matrici delle rigidezze di tutti gli elementi. La matrice globale è una matrice $n \times n$, dove $n$ è il numero totale dei gradi di libertà del sistema.
