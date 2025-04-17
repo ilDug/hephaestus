@@ -173,7 +173,7 @@ class Frame:
             i = B[k].i.id - 1
             j = B[k].j.id - 1
             s = B[k].internal_strengths(D[i], D[j])
-            print(f"Beam {B[k].id} internal strengths: {S[:3]}, {S[3:]}")
+            # print(f"Beam {B[k].id} internal strengths: {S[:3]}, {S[3:]}")
             S[k] = s
 
-        return FrameSolution(N, B, X, L, R, D)
+        return FrameSolution(N, B, X, L, R, D, S)

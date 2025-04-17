@@ -1,4 +1,6 @@
 from prettytable import PrettyTable, TableStyle
+
+from core.loads import DistributedLoad, PointLoad, MomentumLoad
 from .solution import FrameSolution
 from .elements import Frame
 import numpy as np
@@ -47,15 +49,9 @@ def report_node_table(frame: FrameSolution) -> str:
         "Node",
         "Coordinates",
         "Restraints",
-        "Hr",
-        "Vr",
-        "Mr",
         "Ha",
         "Va",
         "Ma",
-        "dx",
-        "dy",
-        "rz",
     ]
 
     # LAMBDAS
@@ -78,24 +74,12 @@ def report_node_table(frame: FrameSolution) -> str:
     X[:, 1] = [str(node.coordinates) for node in frame.N]
     # terza riga: vincoli del nodo
     X[:, 2] = [restraints_(*node.restraints) for node in frame.N]
-    # quarta riga: reazioni orizzontali del nodo
-    X[:, 3] = [f"{(float(frame.R[i,0]))/1000:.2f} kN" for i in range(n)]
-    # quinta riga: reazioni verticali del nodo
-    X[:, 4] = [f"{(float(frame.R[i,1]))/1000:.2f} kN" for i in range(n)]
-    # sesta riga: reazioni momenti del nodo
-    X[:, 5] = [f"{(float(frame.R[i,2]))/1000000:.2f} kNm" for i in range(n)]
     # settima riga: azioni orizzontali del nodo
-    X[:, 6] = [f"{(float(frame.L[i,0]))/1000:.1f} kN" for i in range(n)]
+    X[:, 3] = [f"{(float(frame.L[i,0]))/1000:.1f} kN" for i in range(n)]
     # ottava riga: azioni verticali del nodo
-    X[:, 7] = [f"{(float(frame.L[i,1]))/1000:.1f} kN" for i in range(n)]
+    X[:, 4] = [f"{(float(frame.L[i,1]))/1000:.1f} kN" for i in range(n)]
     # nona riga: azioni momenti del nodo
-    X[:, 8] = [f"{(float(frame.L[i,2]))/1000000:.2f} kNm" for i in range(n)]
-    # decima riga: spostamenti orizzontali del nodo
-    X[:, 9] = [f"{float(frame.D[i,0]):.3f} mm" for i in range(n)]
-    # undicesima riga: spostamenti verticali del nodo
-    X[:, 10] = [f"{float(frame.D[i,1]):.3f} mm" for i in range(n)]
-    # dodicesima riga: rotazioni del nodo
-    X[:, 11] = [f"{float(frame.D[i,2]):.5f} rad" for i in range(n)]
+    X[:, 5] = [f"{(float(frame.L[i,2]))/1000000:.2f} kNm" for i in range(n)]
 
     # TABLE
     ############################
@@ -117,7 +101,6 @@ def report_beam_table(frame: FrameSolution) -> str:
         "Section",
         "Side",
         "Releases",
-        "distibuted load (start-end)",
     ]
     # LAMBDAS
     ############################
@@ -142,8 +125,6 @@ def report_beam_table(frame: FrameSolution) -> str:
     X[:, 4] = [beam.side for beam in frame.B]
     # sesta riga: rilasci interni della trave
     X[:, 5] = [releases_(beam.releases) for beam in frame.B]
-    # settima riga: carico distribuito della trave
-    # X[:, 6] = [str(beam.dload) for beam in frame.B]
 
     # TABLE
     ############################
@@ -153,3 +134,102 @@ def report_beam_table(frame: FrameSolution) -> str:
     beam_report_table.add_rows(X.tolist())
 
     return beam_report_table.get_string()
+
+
+def report_beam_actions(frame: FrameSolution) -> str:
+    fields = [
+        "Beam",
+        "distibuted load [qx, qy]",
+        "point load [(fx, fy), x]",
+        "moment load [M, x]",
+    ]
+
+    d_loads = lambda loads: "| ".join(
+        [
+            f"(qx:{l.P[0]},qy:{l.P[1]}) kN/m"
+            for l in loads
+            if isinstance(l, DistributedLoad)
+        ]
+    )
+    p_loads = lambda loads: "| ".join(
+        [
+            f"(Fx:{l.P[0]/1000:.1f}, Fy:{l.P[1]/1000:.1f}) kN @ {l.x} mm"
+            for l in loads
+            if isinstance(l, PointLoad)
+        ]
+    )
+    m_loads = lambda loads: "| ".join(
+        [
+            f"{l.M/1000000:.1f} kNm @ {l.x} mm"
+            for l in loads
+            if isinstance(l, MomentumLoad)
+        ]
+    )
+
+    # LAMBDAS
+    ############################
+
+    n = len(frame.B)
+    X = np.empty((len(frame.B), len(fields)), dtype=object)
+
+    #  nome dell'elemento
+    X[:, 0] = [beam.id for beam in frame.B]
+    #  carico distribuito della trave
+    X[:, 1] = [d_loads(beam.ext_loads) for beam in frame.B]
+    #  carico puntuale della trave
+    X[:, 2] = [p_loads(beam.ext_loads) for beam in frame.B]
+    #  carico momento della trave
+    X[:, 3] = [m_loads(beam.ext_loads) for beam in frame.B]
+
+    # TABLE
+    ############################
+    beam_report_table = PrettyTable()
+    beam_report_table.set_style(TableStyle.SINGLE_BORDER)
+    beam_report_table.field_names = fields
+    beam_report_table.add_rows(X.tolist())
+
+    return beam_report_table.get_string()
+
+
+def report_node_reactions(frame: FrameSolution):
+    fields = [
+        "Node",
+        "Hr",
+        "Vr",
+        "Mr",
+        "dx",
+        "dy",
+        "rz",
+    ]
+
+    # DATA
+    ############################
+    n = len(frame.N)
+
+    # crea una matrice vuota di dimensioni (nodi, colonne) con tipo object
+    # per contenere i dati del report
+    X = np.empty((n, len(fields)), dtype=object)
+
+    # prima riga: nome del nodo (preceduto dalla lettera 'n')
+    X[:, 0] = [f"n{node.id}" for node in frame.N]
+    # reazioni orizzontali del nodo
+    X[:, 1] = [f"{(float(frame.R[i,0]))/1000:.2f} kN" for i in range(n)]
+    # reazioni verticali del nodo
+    X[:, 2] = [f"{(float(frame.R[i,1]))/1000:.2f} kN" for i in range(n)]
+    # reazioni momenti del nodo
+    X[:, 3] = [f"{(float(frame.R[i,2]))/1000000:.2f} kNm" for i in range(n)]
+    # decima riga: spostamenti orizzontali del nodo
+    X[:, 4] = [f"{float(frame.D[i,0]):.3f} mm" for i in range(n)]
+    # undicesima riga: spostamenti verticali del nodo
+    X[:, 5] = [f"{float(frame.D[i,1]):.3f} mm" for i in range(n)]
+    # dodicesima riga: rotazioni del nodo
+    X[:, 6] = [f"{float(frame.D[i,2]):.5f} rad" for i in range(n)]
+
+    # TABLE
+    ############################
+    node_report_table = PrettyTable()
+    node_report_table.set_style(TableStyle.SINGLE_BORDER)
+    node_report_table.field_names = fields
+    node_report_table.add_rows(X.tolist())
+
+    return node_report_table.get_string()

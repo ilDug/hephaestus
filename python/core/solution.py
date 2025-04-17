@@ -81,6 +81,14 @@ class FrameSolution:
         """Displacements vector for the frame. arranged by node"""
         return self.displacements
 
+    internal_strengths: np.ndarray
+    """Internal strengths vector for the frame. arranged by beam"""
+
+    @property
+    def S(self) -> np.ndarray:
+        """Internal strengths vector for the frame. arranged by beam"""
+        return self.internal_strengths
+
     def save(self):
         """Saves the solution to a file."""
         pass

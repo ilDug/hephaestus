@@ -38,16 +38,17 @@ frame.node(n2).apply_loads(Fy=-0.7, Fx=-0.7)
 # frame.node(n2).apply_loads(Mz=1)
 
 # b1.apply_distributed_load(qx=0, qy=-10)
-# b2.apply_distributed_load(qx=0, qy=-10)
+b2.apply_distributed_load(qx=0, qy=-10)
 b1.apply_point_load(fy=-0.707, fx=0.707, x=300)
-# b1.apply_momentum_load(x=300, M=1)
+b1.apply_momentum_load(x=300, M=1)
 
 
 sol = frame.solve()
 
 # print(report_header())
 print(report_node_table(sol))
+print(report_node_reactions(sol))
 print(report_beam_table(sol))
-
+print(report_beam_actions(sol))
 # for s in secs:
 #     print(s.model_dump_json())
