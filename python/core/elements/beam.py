@@ -6,6 +6,7 @@ from ..materials import Material
 from ..sections import Section
 from ..loads import DistributedLoad, PointLoad, MomentumLoad, ExternalLoad
 
+
 class Beam:
     id: str
     """identficativo della trave"""
@@ -193,7 +194,7 @@ class Beam:
         # get node displacement from solution
         d_global = np.hstack((di, dj))
 
-        # rotate displacement vector to local coordinates of te beam
+        # rotate displacement vector to local coordinates of the beam
         R = RotationMatrix2D.x6(self.angle())
         d = R @ d_global.reshape(-1, 1)
 
@@ -213,5 +214,4 @@ class Beam:
         # (eq è negativo per trasformare le forze sui nodi in quelle sulla trave)
         f = K @ d.reshape(-1, 1) - eq
         f = f.flatten()  # [Ni, Ti, Mi, Nj, Tj, Mj]
-        return f
-        # return f[:3], f[3:]
+        return f  # [Ni, Ti, Mi, Nj, Tj, Mj] (forze interne sui nodi i e j)

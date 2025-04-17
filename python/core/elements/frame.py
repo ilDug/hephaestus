@@ -2,7 +2,7 @@ from typing import Literal
 from .beam import Beam
 from .node import Node
 import numpy as np
-from ..results import FrameSolution
+from ..analysis import FrameSolution
 
 
 class Frame:
@@ -166,14 +166,12 @@ class Frame:
         # displacements array
         D = self.displacements()
 
-        # Internal strengths array (one row for each beam)  [Ni, Ti, Mi, Nj, Tj, Mj]
-        S = np.zeros((len(B), 6), dtype=float)
+        # # Internal strengths array (one row for each beam)  [Ni, Ti, Mi, Nj, Tj, Mj]
+        # S = np.zeros((len(B), 6), dtype=float)
 
-        for k in range(len(B)):
-            i = B[k].i.id - 1
-            j = B[k].j.id - 1
-            s = B[k].nodal_strengths(D[i], D[j])
-            # print(f"Beam {B[k].id} internal strengths: {S[:3]}, {S[3:]}")
-            S[k] = s
+        # for k in range(len(B)):
+        #     i = B[k].i.id - 1
+        #     j = B[k].j.id - 1
+        #     S[k] = B[k].nodal_strengths(D[i], D[j])
 
-        return FrameSolution(N, B, X, L, R, D, S)
+        return FrameSolution(N, B, X, L, R, D)

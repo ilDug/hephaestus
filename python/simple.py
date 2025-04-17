@@ -1,7 +1,7 @@
 from core.elements import Frame
 from core.materials import select_material
 from core.sections import select_section
-from core.results.report import *
+from core.analysis import *
 
 # creo una struttura
 frame = Frame()
@@ -34,16 +34,23 @@ frame.node(n1).set_restraints(True, True, True)
 frame.node(n3).set_restraints(True, True, True)
 
 
-frame.node(n2).apply_loads(Fy=-0.7, Fx=-0.7)
+# frame.node(n2).apply_loads(Fy=-0.7, Fx=-0.7)
 # frame.node(n2).apply_loads(Mz=1)
 
 # b1.apply_distributed_load(qx=0, qy=-10)
+# b1.apply_distributed_load(qx=0, qy=-10)
+# b1.apply_distributed_load(qx=1, qy=2)
+# b1.apply_point_load(fy=-0.707, fx=0.707, x=300)
+# b1.apply_momentum_load(x=300, M=1)
+
 b2.apply_distributed_load(qx=0, qy=-10)
-b1.apply_point_load(fy=-0.707, fx=0.707, x=300)
-b1.apply_momentum_load(x=300, M=1)
+b2.apply_point_load(fy=-1, x=400)
+# b2.apply_momentum_load(x=300, M=1)
 
 
-sol = frame.solve()
+sol: FrameSolution = frame.solve()
+
+analysis = BeamAnalysis(sol).for_beam(b2)
 
 # print(report_header())
 print(report_node_table(sol))
