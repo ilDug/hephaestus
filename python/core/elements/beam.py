@@ -6,18 +6,19 @@ from ..materials import Material
 from ..sections import Section
 from ..loads import DistributedLoad, PointLoad, MomentumLoad, ExternalLoad
 
-
 class Beam:
     id: str
     """identficativo della trave"""
 
     material: Material
     """materiale della trave"""
+
     section: Section
     """sezione della trave"""
 
     i: Node
     """il nodo iniziale della trave"""
+
     j: Node
     """il nodo finale della trave"""
 
@@ -171,9 +172,44 @@ class Beam:
         if dx > 0 and dy < 0:  # quarto quadrante
             return 2 * np.pi + np.arctan(dy / dx)
 
-    def equivalent_loads(self) -> np.ndarray:
+    def equivalent_loads(
+        self, by_node: bool = True
+    ) -> tuple[np.ndarray, np.ndarray] | np.ndarray:
         """calcola i carichi equivalenti sui nodi della trave dovuti ai carichi sull'elemento"""
         L = np.zeros(6, dtype=float)
         for load in self.ext_loads:
             L += load.solve(self.L, self.angle(), self.releases)
-        return L[:3], L[3:]  # carichi equivalenti sui nodi i e j
+        return (L[:3], L[3:]) if by_node else L  # carichi equivalenti sui nodi i e j
+
+    def internal_strengths(
+        self,
+        di: np.array,
+        dj: np.array,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """calcola le forze interne applicate sugli estremi della trave in base alla soluzione del problema
+        di: spostamento globale del nodo i (calcolato dalla risoluzione del frame globale)
+        dj: spostamento globale del nodo j  (calcolato dalla risoluzione del frame globale)
+        """
+        # get node displacement from solution
+        d_global = np.hstack((di, dj))
+
+        # rotate displacement vector to local coordinates of te beam
+        R = RotationMatrix2D.x6(self.angle())
+        d = R @ d_global.reshape(-1, 1)
+
+        E = self.material.E
+        A = self.section.A
+        I = self.section.Iy if self.side == "MAJOR" else self.section.Iz
+        L = self.L
+
+        # matrice di rigidezza locale
+        K = StiffnessMatrix2D(E, A, I, L).with_release(self.releases).matrix()
+        # carichi equivalenti globali dovuti ai carichi esterni applicati direttamente alla trave
+        eq_global = self.equivalent_loads(by_node=False)
+        # ruota i carichi equivalenti nel sistema locale della trave
+        eq = R @ eq_global.reshape(-1, 1)
+        # calcola le forze interne globali
+        f = K @ d.reshape(-1, 1) - eq
+        f = f.flatten()
+
+        return f[:3], f[3:]

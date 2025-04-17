@@ -91,9 +91,9 @@ def report_node_table(frame: FrameSolution) -> str:
     # nona riga: azioni momenti del nodo
     X[:, 8] = [f"{(float(frame.L[i,2]))/1000000:.2f} kNm" for i in range(n)]
     # decima riga: spostamenti orizzontali del nodo
-    X[:, 9] = [f"{float(frame.D[i,0]):.1f} mm" for i in range(n)]
+    X[:, 9] = [f"{float(frame.D[i,0]):.3f} mm" for i in range(n)]
     # undicesima riga: spostamenti verticali del nodo
-    X[:, 10] = [f"{float(frame.D[i,1]):.1f} mm" for i in range(n)]
+    X[:, 10] = [f"{float(frame.D[i,1]):.3f} mm" for i in range(n)]
     # dodicesima riga: rotazioni del nodo
     X[:, 11] = [f"{float(frame.D[i,2]):.5f} rad" for i in range(n)]
 
