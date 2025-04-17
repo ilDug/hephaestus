@@ -139,7 +139,7 @@ class Beam:
             raise Exception(err)
 
     def angle(self) -> float:
-        """calcola l'angolo di rotazione della trave in radianti"""
+        """calcola l'angolo di rotazione della trave in radianti rispetto all'asse x globale"""
         dx = self.j.x - self.i.x
         dy = self.j.y - self.i.y
 
@@ -181,7 +181,7 @@ class Beam:
             L += load.solve(self.L, self.angle(), self.releases)
         return (L[:3], L[3:]) if by_node else L  # carichi equivalenti sui nodi i e j
 
-    def internal_strengths(
+    def nodal_strengths(
         self,
         di: np.ndarray,
         dj: np.ndarray,

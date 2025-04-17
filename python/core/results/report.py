@@ -1,8 +1,6 @@
 from prettytable import PrettyTable, TableStyle
-
-from core.loads import DistributedLoad, PointLoad, MomentumLoad
+from ..loads import DistributedLoad, PointLoad, MomentumLoad
 from .solution import FrameSolution
-from .elements import Frame
 import numpy as np
 
 

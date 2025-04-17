@@ -1,7 +1,7 @@
 from core.elements import Frame
 from core.materials import select_material
 from core.sections import select_section
-from core.report import *
+from core.results.report import *
 
 # creo una struttura
 frame = Frame()

@@ -2,7 +2,7 @@ from typing import Literal
 from .beam import Beam
 from .node import Node
 import numpy as np
-from ..solution import FrameSolution
+from ..results import FrameSolution
 
 
 class Frame:
@@ -172,7 +172,7 @@ class Frame:
         for k in range(len(B)):
             i = B[k].i.id - 1
             j = B[k].j.id - 1
-            s = B[k].internal_strengths(D[i], D[j])
+            s = B[k].nodal_strengths(D[i], D[j])
             # print(f"Beam {B[k].id} internal strengths: {S[:3]}, {S[3:]}")
             S[k] = s
 
