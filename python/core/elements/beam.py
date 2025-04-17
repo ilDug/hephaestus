@@ -183,9 +183,9 @@ class Beam:
 
     def internal_strengths(
         self,
-        di: np.array,
-        dj: np.array,
-    ) -> tuple[np.ndarray, np.ndarray]:
+        di: np.ndarray,
+        dj: np.ndarray,
+    ) -> np.ndarray:
         """calcola le forze interne applicate sugli estremi della trave in base alla soluzione del problema
         di: spostamento globale del nodo i (calcolato dalla risoluzione del frame globale)
         dj: spostamento globale del nodo j  (calcolato dalla risoluzione del frame globale)
@@ -209,7 +209,9 @@ class Beam:
         # ruota i carichi equivalenti nel sistema locale della trave
         eq = R @ eq_global.reshape(-1, 1)
         # calcola le forze interne globali
+        # [Ni, Ti, Mi, Nj, Tj, Mj] = [K] @ {d} - {eq}
+        # (eq è negativo per trasformare le forze sui nodi in quelle sulla trave)
         f = K @ d.reshape(-1, 1) - eq
-        f = f.flatten()
-
-        return f[:3], f[3:]
+        f = f.flatten()  # [Ni, Ti, Mi, Nj, Tj, Mj]
+        return f
+        # return f[:3], f[3:]

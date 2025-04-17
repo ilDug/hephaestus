@@ -166,4 +166,14 @@ class Frame:
         # displacements array
         D = self.displacements()
 
+        # Internal strengths array (one row for each beam)  [Ni, Ti, Mi, Nj, Tj, Mj]
+        S = np.zeros((len(B), 6), dtype=float)
+
+        for k in range(len(B)):
+            i = B[k].i.id - 1
+            j = B[k].j.id - 1
+            s = B[k].internal_strengths(D[i], D[j])
+            print(f"Beam {B[k].id} internal strengths: {S[:3]}, {S[3:]}")
+            S[k] = s
+
         return FrameSolution(N, B, X, L, R, D)

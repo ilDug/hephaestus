@@ -51,11 +51,3 @@ print(report_beam_table(sol))
 
 # for s in secs:
 #     print(s.model_dump_json())
-
-
-for b in frame.beams:
-    i = b.i.id - 1
-    j = b.j.id - 1
-    fi, fj = b.internal_strengths(sol.D[i], sol.D[j])
-    # print(f"Beam {b.id} displacement: {sol.D[i], sol.D[i]}")
-    print(f"Beam {b.id} internal strengths: {fi}, {fj}")
