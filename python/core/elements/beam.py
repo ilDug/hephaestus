@@ -26,7 +26,7 @@ class Beam:
     releases: tuple[bool, bool] = (False, False)
     """rilascio interni della trave"""
 
-    L: float
+    L: int
     """lunghezza della trave in mm"""
 
     side: Literal["MAJOR", "MINOR"] = "MAJOR"
@@ -82,6 +82,10 @@ class Beam:
         fy: carico in direzione Y in kN
         x: posizione del carico lungo la trave in mm
         """
+        raise NotImplementedError(
+            "Per ora non è possibile applicare carichi puntuali. Migliorare il modulo di analisi per prendere in considerazion i contributi dei carichi puntuali."
+        )
+
         # controlla se il carico è  nullo
         if not fx and not fy:
             raise ValueError("carico nullo")
