@@ -124,6 +124,10 @@ class BeamAnalysis:
         """
         Returns the zeros of the beam.
         """
+
+        raise NotImplementedError(
+            "The method zeros() is not implemented yet. Please implement it."
+        )
         ascisse = np.linspace(0, self.beam.L, int(self.beam.L + 1), dtype=int)
         strengths = np.array([self.fx(x) for x in ascisse])
 
@@ -140,7 +144,7 @@ class BeamAnalysis:
                 x0, x1 = ascisse[i], ascisse[i + 1]
                 y0, y1 = shear[i], shear[i + 1]
                 # Interpolazione lineare per trovare lo zero
-                x_zero = x0 - y0 * (x1 - x0) / (y1 - y0)
+                x_zero = x0 - y0 * (x1 - x0) / (y1 - y0) if y1 != 0 and y0 != 0 else x0
                 shear_zeros.append(int(x_zero))
 
             # check if the sign changes
@@ -148,14 +152,14 @@ class BeamAnalysis:
                 x0, x1 = ascisse[i], ascisse[i + 1]
                 y0, y1 = axial[i], axial[i + 1]
                 # Interpolazione lineare per trovare lo zero
-                x_zero = x0 - y0 * (x1 - x0) / (y1 - y0)
+                x_zero = x0 - y0 * (x1 - x0) / (y1 - y0) if y1 != 0 and y0 != 0 else x0
                 axial_zeros.append(int(x_zero))
 
             if moment[i] * moment[i + 1] < 0:
                 x0, x1 = ascisse[i], ascisse[i + 1]
                 y0, y1 = moment[i], moment[i + 1]
                 # Interpolazione lineare per trovare lo zero
-                x_zero = x0 - y0 * (x1 - x0) / (y1 - y0)
+                x_zero = x0 - y0 * (x1 - x0) / (y1 - y0) if y1 != 0 and y0 != 0 else x0
                 moment_zeros.append(int(x_zero))
 
         return axial_zeros, shear_zeros, moment_zeros  # shape

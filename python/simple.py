@@ -2,7 +2,6 @@ from core.elements import Frame
 from core.materials import select_material
 from core.sections import select_section
 from core.analysis import *
-import matplotlib.pyplot as plt
 
 
 # creo una struttura
@@ -60,15 +59,17 @@ print(report_node_reactions(sol))
 print(report_beam_table(sol))
 print(report_beam_actions(sol))
 
-a1 = BeamAnalysis(sol).for_beam(b1)
+frame.analyze()
+
+# a1 = BeamAnalysis(sol).for_beam(b1)
 # print(a1.fx(0))
 # print(a1.fx(272.73))
-print(a1.zeros())
+# print(a1.zeros())
 # print(a1.maximums())
 # print(a1.Momentum())
 
 
-a2 = BeamAnalysis(sol).for_beam(b2)
+# a2 = BeamAnalysis(sol).for_beam(b2)
 # # print(a2.fx(0))
 # # print(a2.fx(500))
 # print(a2.zeros())
@@ -76,7 +77,7 @@ a2 = BeamAnalysis(sol).for_beam(b2)
 
 
 # Plot momentum diagram for b1
-m_diagram_b1 = a1.Momentum() * [1, 1 / 1000000]
+# m_diagram_b1 = a1.Momentum() * [1, 1 / 1000000]
 # print(m_diagram_b1.round(2).tolist())
 
 

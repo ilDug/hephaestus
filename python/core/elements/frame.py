@@ -3,7 +3,7 @@ from .beam import Beam
 from .node import Node
 import numpy as np
 from ..analysis import FrameSolution
-
+from ..analysis import BeamAnalysis
 
 class Frame:
 
@@ -175,3 +175,12 @@ class Frame:
         #     S[k] = B[k].nodal_strengths(D[i], D[j])
 
         return FrameSolution(N, B, X, L, R, D)
+
+    def analyze(self):
+        sol = self.solve()
+        analysis = BeamAnalysis(sol)
+        for b in self.beams:
+            analysis.for_beam(b)
+            print(f"Beam {b.id}:")
+            print(f"maxumims: {analysis.maximums()}")
+            print(f"Bending moment: {analysis.Momentum()}")
