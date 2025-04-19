@@ -1,0 +1,62 @@
+ 
+2025-04-19 11:47:20
+Frame Solution
+====================
+┌──────┬─────────────┬────────────┬────────┬──────────┬──────────┐
+│ Node │ Coordinates │ Restraints │   Ha   │    Va    │    Ma    │
+├──────┼─────────────┼────────────┼────────┼──────────┼──────────┤
+│  n1  │    (0, 0)   │  [X X X]   │ 0.0 kN │  0.0 kN  │ 0.00 kNm │
+│  n2  │   (500, 0)  │  [- - -]   │ 0.0 kN │ -10.0 kN │ 0.00 kNm │
+│  n3  │  (1000, 0)  │  [X X X]   │ 0.0 kN │  0.0 kN  │ 0.00 kNm │
+└──────┴─────────────┴────────────┴────────┴──────────┴──────────┘
+┌──────┬────────┬──────────┬─────────┬───────┬──────────┐
+│ Beam │ Length │ Material │ Section │  Side │ Releases │
+├──────┼────────┼──────────┼─────────┼───────┼──────────┤
+│ 1-2  │ 500 mm │   S235   │  HEA100 │ MAJOR │   - -    │
+│ 2-3  │ 500 mm │   S235   │  HEA100 │ MAJOR │   - -    │
+└──────┴────────┴──────────┴─────────┴───────┴──────────┘
+┌──────┬─────────┬─────────┬───────────┬──────────┬───────────┬─────────────┐
+│ Node │    Hr   │    Vr   │     Mr    │    dx    │     dy    │      rz     │
+├──────┼─────────┼─────────┼───────────┼──────────┼───────────┼─────────────┤
+│  n1  │ 0.00 kN │ 5.00 kN │  1.25 kNm │ 0.000 mm │  0.000 mm │ 0.00000 rad │
+│  n2  │ 0.00 kN │ 0.00 kN │  0.00 kNm │ 0.000 mm │ -0.071 mm │ 0.00000 rad │
+│  n3  │ 0.00 kN │ 5.00 kN │ -1.25 kNm │ 0.000 mm │  0.000 mm │ 0.00000 rad │
+└──────┴─────────┴─────────┴───────────┴──────────┴───────────┴─────────────┘
+┌──────┬──────────────────────────┬──────────────────────────┬────────────────────┐
+│ Beam │ distibuted load [qx, qy] │ point load [(fx, fy), x] │ moment load [M, x] │
+├──────┼──────────────────────────┼──────────────────────────┼────────────────────┤
+│ 1-2  │                          │                          │                    │
+│ 2-3  │                          │                          │                    │
+└──────┴──────────────────────────┴──────────────────────────┴────────────────────┘
+
+Note:
+    kN = kiloNewton, kNm = kiloNewton meter, mm = millimeter, rad = radian
+
+    RESTRAINTS:
+    an X indicates a restrained degree of freedom, a - indicates a free degree of freedom
+    a node can be restrained in the horizontal, vertical, and rotational directions
+    ordererd as [X X X].
+    example: 
+    [X X -] is a hinge
+    [- - -] is a free node
+    [- X -] is a vertical support (horizontal roller)
+    [X X X] is a fixed support
+    [- - X] is guided support without rotation
+
+
+    REACTIONS:
+    - Hr = Horizontal reaction, 
+    - Vr = Vertical reaction, 
+    - Mr = Moment reaction
+
+    ACTIONS:
+    - Ha = Horizontal action, 
+    - Va = Vertical action, 
+    - Ma = Moment action
+
+    DISPLACEMENTS:
+    - dx = Displacement in the horizontal direction, 
+    - dy = Displacement in the vertical direction
+    - rz = Rotation around the z-axis
+        
+        

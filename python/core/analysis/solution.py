@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-
-from core.elements import Node, Beam
+from ..elements import Node, Beam
+from datetime import datetime
 import numpy as np
 
 
@@ -80,11 +80,3 @@ class FrameSolution:
     def D(self) -> np.ndarray:
         """Displacements vector for the frame. arranged by node"""
         return self.displacements
-
-    def save(self):
-        """Saves the solution to a file."""
-        pass
-
-    def load(self):
-        """Loads the solution from a file."""
-        pass

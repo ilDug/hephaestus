@@ -2,8 +2,17 @@ from typing import Literal
 from .beam import Beam
 from .node import Node
 import numpy as np
-from ..analysis import FrameSolution
+from ..analysis import (
+    FrameSolution,
+    report_header,
+    report_node_table,
+    report_beam_table,
+    report_node_reactions,
+    report_beam_actions,
+)
 from ..analysis import BeamAnalysis
+from datetime import datetime
+
 
 class Frame:
 
@@ -184,3 +193,21 @@ class Frame:
             print(f"Beam {b.id}:")
             print(f"maxumims: {analysis.maximums()}")
             print(f"Bending moment: {analysis.Momentum()}")
+
+    def save_solution(self, path: str, raw: bool = False):
+        """Saves the solution to a file."""
+        sol = self.solve()
+        out = f""" 
+{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+Frame Solution
+====================
+{report_node_table(sol)}
+{report_beam_table(sol)}
+{report_node_reactions(sol)}
+{report_beam_actions(sol)}
+{report_header()}
+        """
+        with open(path, "w") as f:
+            f.write(out)
+        print(f"Solution saved to {path}")
+        return out

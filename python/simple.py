@@ -50,16 +50,11 @@ frame.node(n2).apply_loads(Fy=-10)
 # b2.apply_momentum_load(x=300, M=1)
 
 
-sol: FrameSolution = frame.solve()
+frame.save_solution("simple.txt")
 
 
-# print(report_header())
-print(report_node_table(sol))
-print(report_node_reactions(sol))
-print(report_beam_table(sol))
-print(report_beam_actions(sol))
+# sol: FrameSolution = frame.solve()
 
-frame.analyze()
 
 # a1 = BeamAnalysis(sol).for_beam(b1)
 # print(a1.fx(0))
