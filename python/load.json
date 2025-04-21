@@ -1,0 +1,37 @@
+{
+    "materials": ["S235"],
+    "sections": ["IPE100"],
+    "nodes": [
+        {
+            "id": "n2",
+            "coordinates": [500, 0],
+            "restraints": [true, true, true],
+            "loads": [0, -10, 0]
+        },
+        {
+            "id": "n1",
+            "coordinates": [0, 0],
+            "restraints": [true, true, true]
+        },
+
+        {
+            "id": "n3",
+            "coordinates": [1000, 0]
+        }
+    ],
+    "beams": [
+        {
+            "id": "b1",
+            "nodes": ["n1", "n2"],
+            "material": "S235",
+            "section": "IPE100",
+            "loads": [0, 0]
+        },
+        {
+            "id": "b2",
+            "nodes": ["n2", "n3"],
+            "material": "S235",
+            "section": "IPE100"
+        }
+    ]
+}

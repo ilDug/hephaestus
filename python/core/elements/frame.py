@@ -36,8 +36,12 @@ class Frame:
         self.beams.append(beam)
         return beam
 
-    def node(self, n: int) -> Node:
+    def node(self, n: int | str) -> Node:
         """Restituisce il nodo con ID n"""
+        # if n is a string, convert it to an integer
+        if isinstance(n, str):
+            n = n.replace("n", "")
+            n = int(n)
         return next((node for node in self.nodes if node.id == n), None)
 
     def beam(self, n1: int, n2: int) -> Beam:
