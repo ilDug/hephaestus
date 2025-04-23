@@ -2,8 +2,8 @@ from typing import Annotated, Literal
 import numpy as np
 from .node import Node
 from ..matrices import RotationMatrix2D, StiffnessMatrix2D
-from ..materials import Material
-from ..sections import Section
+from ..materials import Material, select_material
+from ..sections import Section, select_section
 from ..loads import DistributedLoad, PointLoad, MomentumLoad, ExternalLoad
 
 
@@ -42,14 +42,16 @@ class Beam:
         self.ext_loads: list[ExternalLoad] = []
         """carichi esterni applicati alla trave"""
 
-    def set_material(self, material: Material) -> "Beam":
+    def set_material(self, material: str) -> "Beam":
         """imposta il materiale della trave"""
-        self.material = material
+        m = select_material(material)
+        self.material = m
         return self
 
-    def set_section(self, section: Section) -> "Beam":
+    def set_section(self, section: str) -> "Beam":
         """ "imposta le proprietà della sezione trasversale della trave"""
-        self.section = section
+        s = select_section(section)
+        self.section = s
         return self
 
     def set_internal_releases(self, i: bool = False, j: bool = False) -> "Beam":

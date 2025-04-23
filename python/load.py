@@ -17,9 +17,6 @@ with open("load.json", "r") as file:
 # Create an instance of InputFrame using the loaded data
 input_frame = InputFrame(**load_data)
 
-# crea i materiali e le sezioni
-materials = [select_material(m) for m in input_frame.materials]
-sections = [select_section(s) for s in input_frame.sections]
 
 # crea i nodi
 for input_node in input_frame.nodes:
@@ -43,13 +40,10 @@ for beam in input_frame.beams:
     i = frame.node(beam.nodes[0])
     j = frame.node(beam.nodes[1])
 
-    material = next((m for m in materials if m.name == beam.material), None)
-    section = next((s for s in sections if s.profile == beam.section), None)
-
     input_beam = (
         frame.add_beam(i.id, j.id)
-        .set_material(material)
-        .set_section(section)
+        .set_material(beam.material)
+        .set_section(beam.section)
         .set_internal_releases(i=beam.releases[0], j=beam.releases[1])
         .set_side(beam.side)
         .apply_distributed_load(beam.loads[0], beam.loads[1])

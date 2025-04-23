@@ -18,15 +18,15 @@ n3 = frame.add_node((1000, 0))
 
 b1 = (
     frame.add_beam(n1, n2)
-    .set_material(m1)
-    .set_section(s1)
+    .set_material("S235")
+    .set_section("HEA100")
     # .set_internal_releases(i=True, j=True)
     # .set_side("MINOR")
 )
 b2 = (
     frame.add_beam(n2, n3)
-    .set_material(m1)
-    .set_section(s1)
+    .set_material("S235")
+    .set_section("HEA100")
     # .set_internal_releases(j=True)
 )
 
@@ -45,7 +45,7 @@ frame.node(n2).apply_loads(Fy=-10)
 # b1.apply_point_load(fy=-0.707, fx=0.707, x=300)
 # b1.apply_momentum_load(x=300, M=1)
 
-# b2.apply_distributed_load(qx=0, qy=-10)
+b2.apply_distributed_load(qx=0, qy=-10)
 # b2.apply_point_load(fy=-1, x=400)
 # b2.apply_momentum_load(x=300, M=1)
 
