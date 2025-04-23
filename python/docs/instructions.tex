@@ -80,6 +80,7 @@ La matrice delle rigidezze può essere riferita a diverse configurazioni in base
         \end{bmatrix}
 \end{equation}
 
+
 \vspace{1em}
 \textbf{CERNIERA-INCASTRO}
 
@@ -95,7 +96,6 @@ La matrice delle rigidezze può essere riferita a diverse configurazioni in base
         \end{bmatrix}
 \end{equation}
 
-\noindent\rule{\textwidth}{0.4pt}
 
 \vspace{1em}
 \textbf{INCASTRO-CERNIERA}
@@ -154,7 +154,6 @@ Dove $\theta$ è l'angolo di inclinazione inorno all'asse Z.
 La matrice delle rigidezze locali è una matrice $6 \times 6$ che rappresenta la relazione tra le forze e gli spostamenti in corrispondenza di un nodo dell'elemento. 
 
 \section{Matrice delle rigidezze globale}
-\footnote{La matrice delle rigidezze globale è una matrice che rappresenta la relazione tra le forze e gli spostamenti in corrispondenza di tutti i nodi del sistema. Essa viene ottenuta sommando le matrici delle rigidezze locali di tutti gli elementi del sistema.}
 
 La matrice delle rigidezze globale del sistema è ottenuta sommando le matrici delle rigidezze di tutti gli elementi. La matrice globale è una matrice $n \times n$, dove $n$ è il numero totale dei gradi di libertà del sistema.
 
@@ -162,9 +161,74 @@ Per comporla bisogna prima ruotare tutte le matrici delle rigidezze locali nel s
 
 La rotazione della matrice locale di ogni elemento è necessaria per garantire che le forze e gli spostamenti siano espressi nel sistema di riferimento globale. La matrice di trasformazione $\mathbf{R}$ è una matrice $6 \times 6$ che ruota le forze e gli spostamenti dal sistema locale al sistema globale(vedi Eq.~\ref{eq:global_stiffness_formula}).
 
+\section{Spostamenti e reazioni vincolari}
+
+\subsection{Spostamenti}
+Gli spostamenti sono le variazioni di posizione dei nodi del sistema a seguito dell'applicazione di forze esterne. Gli spostamenti sono rappresentati da un vettore $\mathbf{u}$, che contiene gli spostamenti in corrispondenza di tutti i nodi del sistema. Gli spostamenti possono essere calcolati utilizzando la matrice delle rigidezze globale e il vettore delle forze applicate al sistema.
+
+Gli spostamenti sono ottenuti risolvendo il sistema di equazioni lineari:
+\begin{equation}
+    \mathbf{K}_{global} \cdot \mathbf{u} = \mathbf{F}
+\end{equation}
+Dove $\mathbf{u}$ è il vettore degli spostamenti e $\mathbf{F}$ è il vettore delle forze applicate al sistema. La matrice delle rigidezze globale $\mathbf{K}_{global}$ è una matrice $n \times n$ che rappresenta la relazione tra le forze e gli spostamenti in corrispondenza di tutti i nodi del sistema.
+
+Il vettore delle forze $\mathbf{F}$ è una matrice colonna $n \times 1$ che contiene le forze applicate a ciascun nodo del sistema. Esso possono essere forze esterne applicate direttamente al nodo ovvero possono essere i \textbf{carichi equivalenti} (\ref{sec:carichi_nodali_equivalenti}) generati dalle forze interne degli elementi, come per esempio carichi distribuiti o forze applicate in pun punto all'interno della lunghezza della trave.
+Per il calcolo delle forze equivalenti dovuta a carichi distribuiti è necessario calcolare l'integrale del carico distribuito lungo la lunghezza dell'elemento. Ad esempio, se si ha un carico distribuito $w(x)$ lungo la lunghezza dell'elemento, le forze equivalenti possono essere calcolate come:
+\begin{equation}
+    F_{eq} = \int_0^L w(x) dx
+\end{equation}
+Dove $L$ è la lunghezza dell'elemento e $w(x)$ è il carico distribuito lungo l'asse longitudinale dell'elemento. Le forze equivalenti possono essere calcolate in corrispondenza di ciascun nodo dell'elemento e quindi assemblate nel vettore delle forze globale.
 
 
 
+Tuttavia non è sempre possibile calcolare gli spostamenti e le reazioni vincolari in modo diretto. In alcuni casi, è necessario considerare i vincoli del sistema e le condizioni al contorno. Ad esempio, se un nodo è vincolato a muoversi in una direzione specifica, è necessario modificare la matrice delle rigidezze globale per tener conto di questo vincolo. In questo caso, è necessario eliminare la riga e la colonna corrispondenti al nodo vincolato dalla matrice delle rigidezze globale e dal vettore delle forze.Si otterrà una matrice  delle rigidezza che avrà annullata la colonna e la riga corrispondente al nodo vincolato, mentre in posizione diagonale si avrà il valore $1$.
+
+Questo processo è noto come \textbf{eliminazione dei gradi di libertà} e consente di ridurre il sistema a un numero inferiore di gradi di libertà. Una volta che il sistema è stato ridotto, è possibile calcolare gli spostamenti utilizzando la matrice delle rigidezze globale ridotta e il vettore delle forze ridotto.
+
+\begin{equation}
+    K_{reduced} \cdot u = F_{reduced}
+\end{equation}
 
 
+\subsection{Reazioni vincolari}
+Una volta ricavati gli spostamenti, è possibile calcolare \textbf{le reazioni vincolari} utilizzando la matrice delle rigidezze globale e il vettore degli spostamenti. Le reazioni vincolari sono ottenute risolvendo il sistema di equazioni lineari:
+
+\begin{equation}
+    \mathbf{R} = \mathbf{K}_{global} \cdot \mathbf{u} - \mathbf{F}
+\end{equation}
+
+Dove $\mathbf{R}$ è il vettore delle reazioni vincolari e $\mathbf{F}$ è il vettore delle forze applicate al sistema. La matrice delle rigidezze globale $\mathbf{K}_{global}$ è una matrice $n \times n$ che rappresenta la relazione tra le forze e gli spostamenti in corrispondenza di tutti i nodi del sistema.
+
+Le reazioni vincolari sono le forze e i momenti che agiscono sui nodi del sistema a causa dei vincoli imposti. Esse sono importanti per garantire che il sistema sia in equilibrio e che le forze siano distribuite correttamente tra gli elementi.
+
+\subsection{Carichi nodali equivalenti}
+\label{sec:carichi_nodali_equivalenti}
+I carichi distribuiti sulla trave ovvero i carichi concentrati non applicati direttamente ai nodi del calcolo strutturale, devono essere convertiti in carichi nodali equivalenti. I carichi nodali equivalenti sono forze e momenti applicati ai nodi del sistema che rappresentano l'effetto dei carichi distribuiti o concentrati.
+I carichi nodali equivalenti possono essere calcolati utilizzando le formule di integrazione numerica, come il metodo dei trapezi o il metodo di Simpson. Questi metodi consentono di approssimare l'integrale del carico distribuito lungo la lunghezza dell'elemento e di ottenere i carichi nodali equivalenti.
+
+Ad esempio, se si ha un carico distribuito $w(x)$ lungo la lunghezza dell'elemento, i carichi nodali equivalenti possono essere calcolati come:
+
+\begin{equation}
+    F_{eq} = \int_0^L w(x) dx
+\end{equation}
+
+Dove $L$ è la lunghezza dell'elemento e $w(x)$ è il carico distribuito lungo l'asse longitudinale dell'elemento. I carichi nodali equivalenti possono essere calcolati in corrispondenza di ciascun nodo dell'elemento e quindi assemblati nel vettore delle forze globale.
+
+Operativamente esistono situazioni di carico elementari per le quali è possibile calcolare i carichi nodali equivalenti in modo diretto.
+
+Ecco alcuni esempi di carichi nodali equivalenti per carichi distribuiti e concentrati:
+
+\section*{ANNEX 1 - Configurazioni notevoli di carico esterno}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+\textbf{INCASTRO INCASTRO - carico distribuito uniforme}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/external-load-fixed-fixed-ditributed.png}
+    \label{fig:fix-fix-distributed_load_beam}
+    \caption{Trave Incastro-Incastro con carico distribuito uniforme.}
+\end{figure}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 \end{document}
