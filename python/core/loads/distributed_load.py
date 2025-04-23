@@ -21,7 +21,15 @@ class DistributedLoad(ExternalLoad):
 
     def __str__(self) -> str:
         """restituisce una stringa di rappresentazione della classe"""
-        return f"qx: {self.P[0]:.1f} kN/m | qy: {self.P[1]:.1f} kN/m"
+        match self.P:
+            case [0, 0]:
+                return "---"
+            case [0, qy] if qy != 0:
+                return f"qy:{qy:.1f} kN/m"
+            case [qx, 0] if qx != 0:
+                return f"qx:{qx:.1f} kN/m"
+            case [qx, qy] if qx != 0 and qy != 0:
+                return f"qx:{qx:.1f},qy:{qy:.1f} kN/m"
 
     def solve(
         self,

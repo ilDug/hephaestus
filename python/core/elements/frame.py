@@ -22,7 +22,7 @@ class Frame:
     def __init__(self):
         pass
 
-    def add_node(self, coordinates: tuple[float, float], tag: str = None) -> int:
+    def add_node(self, coordinates: tuple[float, float], tag: str = None) -> str:
         """Aggiunge un nodo alla struttura"""
         id = len(self.nodes)
         tag = tag if tag is not None else f"n{id+1}"

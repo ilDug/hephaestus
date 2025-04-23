@@ -86,6 +86,8 @@ def report_node_table(frame: FrameSolution) -> str:
     node_report_table.field_names = fields
     node_report_table.add_rows(X.tolist())
 
+    node_report_table.sortby = "Node"
+
     return node_report_table.get_string()
 
 
@@ -130,6 +132,7 @@ def report_beam_table(frame: FrameSolution) -> str:
     beam_report_table.set_style(TableStyle.SINGLE_BORDER)
     beam_report_table.field_names = fields
     beam_report_table.add_rows(X.tolist())
+    beam_report_table.sortby = "Beam"
 
     return beam_report_table.get_string()
 
@@ -138,25 +141,21 @@ def report_beam_actions(frame: FrameSolution) -> str:
     fields = [
         "Beam",
         "distibuted load [qx, qy]",
-        "point load [(fx, fy), x]",
-        "moment load [M, x]",
+        # "point load [(fx, fy), x]",
+        # "moment load [M, x]",
     ]
 
-    d_loads = lambda loads: "| ".join(
-        [
-            f"(qx:{l.P[0]},qy:{l.P[1]}) kN/m"
-            for l in loads
-            if isinstance(l, DistributedLoad)
-        ]
+    d_loads = lambda loads: " | ".join(
+        [str(l) for l in loads if isinstance(l, DistributedLoad)]
     )
-    p_loads = lambda loads: "| ".join(
+    p_loads = lambda loads: " | ".join(
         [
             f"(Fx:{l.P[0]/1000:.1f}, Fy:{l.P[1]/1000:.1f}) kN @ {l.x} mm"
             for l in loads
             if isinstance(l, PointLoad)
         ]
     )
-    m_loads = lambda loads: "| ".join(
+    m_loads = lambda loads: " | ".join(
         [
             f"{l.M/1000000:.1f} kNm @ {l.x} mm"
             for l in loads
@@ -174,10 +173,10 @@ def report_beam_actions(frame: FrameSolution) -> str:
     X[:, 0] = [beam.tag for beam in frame.B]
     #  carico distribuito della trave
     X[:, 1] = [d_loads(beam.ext_loads) for beam in frame.B]
-    #  carico puntuale della trave
-    X[:, 2] = [p_loads(beam.ext_loads) for beam in frame.B]
-    #  carico momento della trave
-    X[:, 3] = [m_loads(beam.ext_loads) for beam in frame.B]
+    # #  carico puntuale della trave
+    # X[:, 2] = [p_loads(beam.ext_loads) for beam in frame.B]
+    # #  carico momento della trave
+    # X[:, 3] = [m_loads(beam.ext_loads) for beam in frame.B]
 
     # TABLE
     ############################
@@ -185,6 +184,7 @@ def report_beam_actions(frame: FrameSolution) -> str:
     beam_report_table.set_style(TableStyle.SINGLE_BORDER)
     beam_report_table.field_names = fields
     beam_report_table.add_rows(X.tolist())
+    beam_report_table.sortby = "Beam"
 
     return beam_report_table.get_string()
 
@@ -229,5 +229,6 @@ def report_node_reactions(frame: FrameSolution):
     node_report_table.set_style(TableStyle.SINGLE_BORDER)
     node_report_table.field_names = fields
     node_report_table.add_rows(X.tolist())
+    node_report_table.sortby = "Node"
 
     return node_report_table.get_string()
