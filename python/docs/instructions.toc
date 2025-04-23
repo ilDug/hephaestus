@@ -1,3 +1,7 @@
 \contentsline {section}{\numberline {1}Matrice delle rigidezze locali}{2}{section.1}%
 \contentsline {section}{\numberline {2}Matrice di Trasformazione}{3}{section.2}%
 \contentsline {section}{\numberline {3}Matrice delle rigidezze globale}{4}{section.3}%
+\contentsline {section}{\numberline {4}Spostamenti e reazioni vincolari}{4}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Spostamenti}{4}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Reazioni vincolari}{5}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Carichi nodali equivalenti}{5}{subsection.4.3}%
