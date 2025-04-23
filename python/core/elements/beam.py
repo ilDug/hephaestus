@@ -54,9 +54,11 @@ class Beam:
         self.section = s
         return self
 
-    def set_internal_releases(self, i: bool = False, j: bool = False) -> "Beam":
-        """imposta i rilasci interni della trave"""
-        self.releases = (i, j)
+    def set_internal_releases(
+        self, releases: tuple[bool, bool] = (False, False)
+    ) -> "Beam":
+        """imposta i rilasci interni della trave. True se il rilascio è presente, False altrimenti"""
+        self.releases = releases
         return self
 
     def set_side(self, side: Literal["MAJOR", "MINOR"]) -> "Beam":

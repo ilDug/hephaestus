@@ -194,7 +194,7 @@ class StiffnessMatrix2D:
         Kmirj = 0
         Knjrj = 0
         Ktjrj = 0
-        Kmjrj = 0  # diagonale
+        Kmjrj = 1  # diagonale
 
         stiffness_matrix = np.array(
             [
@@ -241,7 +241,7 @@ class StiffnessMatrix2D:
         # reazioni dovute alla rotazione del nodo i
         Kniri = 0
         Ktiri = 0
-        Kmiri = 0  # diagonale
+        Kmiri = 1  # diagonale
         Knjri = 0
         Ktjri = 0
         Kmjri = 0
