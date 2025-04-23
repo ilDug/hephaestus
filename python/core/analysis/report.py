@@ -67,7 +67,7 @@ def report_node_table(frame: FrameSolution) -> str:
     X = np.empty((n, len(fields)), dtype=object)
 
     # prima riga: nome del nodo (preceduto dalla lettera 'n')
-    X[:, 0] = [f"n{node.id}" for node in frame.N]
+    X[:, 0] = [f"{node.tag}" for node in frame.N]
     # seconda riga: coordinate del nodo
     X[:, 1] = [str(node.coordinates) for node in frame.N]
     # terza riga: vincoli del nodo
@@ -112,7 +112,7 @@ def report_beam_table(frame: FrameSolution) -> str:
     X = np.empty((len(frame.B), len(fields)), dtype=object)
 
     # prima riga: nome dell'elemento (preceduto dalla lettera 'n')
-    X[:, 0] = [beam.id for beam in frame.B]
+    X[:, 0] = [beam.tag for beam in frame.B]
     # seconda riga: lunghezza del nodo
     X[:, 1] = [f"{int(beam.L)} mm" for beam in frame.B]
     # terza riga: nome del materiale
@@ -171,7 +171,7 @@ def report_beam_actions(frame: FrameSolution) -> str:
     X = np.empty((len(frame.B), len(fields)), dtype=object)
 
     #  nome dell'elemento
-    X[:, 0] = [beam.id for beam in frame.B]
+    X[:, 0] = [beam.tag for beam in frame.B]
     #  carico distribuito della trave
     X[:, 1] = [d_loads(beam.ext_loads) for beam in frame.B]
     #  carico puntuale della trave
@@ -209,7 +209,7 @@ def report_node_reactions(frame: FrameSolution):
     X = np.empty((n, len(fields)), dtype=object)
 
     # prima riga: nome del nodo (preceduto dalla lettera 'n')
-    X[:, 0] = [f"n{node.id}" for node in frame.N]
+    X[:, 0] = [f"{node.tag}" for node in frame.N]
     # reazioni orizzontali del nodo
     X[:, 1] = [f"{(float(frame.R[i,0]))/1000:.2f} kN" for i in range(n)]
     # reazioni verticali del nodo

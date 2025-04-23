@@ -1,6 +1,4 @@
 {
-    "materials": ["S235"],
-    "sections": ["IPE100"],
     "nodes": [
         {
             "id": "n2",

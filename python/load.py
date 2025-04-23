@@ -27,24 +27,24 @@ for input_node in input_frame.nodes:
     # cerca nell'input inogni trave se contiene il nome del nodo
     # e se lo contiene lo sostituisce con il nuovo id
     # in modo da non avere conflitti di id
-    for x in range(len(input_frame.beams)):
-        for y in range(len(input_frame.beams[x].nodes)):
-            input_frame.beams[x].nodes[y] = (
-                n
-                if input_node.id == input_frame.beams[x].nodes[y]
-                else input_frame.beams[x].nodes[y]
-            )
+    # for x in range(len(input_frame.beams)):
+    #     for y in range(len(input_frame.beams[x].nodes)):
+    #         input_frame.beams[x].nodes[y] = (
+    #             n
+    #             if input_node.id == input_frame.beams[x].nodes[y]
+    #             else input_frame.beams[x].nodes[y]
+    #         )
 
 # crea le travi
 for beam in input_frame.beams:
-    i = frame.node(beam.nodes[0])
-    j = frame.node(beam.nodes[1])
+    label_i = frame.node(beam.nodes[0])
+    label_j = frame.node(beam.nodes[1])
 
     input_beam = (
         frame.add_beam(i.id, j.id)
         .set_material(beam.material)
         .set_section(beam.section)
-        .set_internal_releases(i=beam.releases[0], j=beam.releases[1])
+        .set_internal_releases(beam.releases)
         .set_side(beam.side)
         .apply_distributed_load(beam.loads[0], beam.loads[1])
     )

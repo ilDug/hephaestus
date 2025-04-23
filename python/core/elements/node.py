@@ -2,13 +2,16 @@ import numpy as np
 
 
 class Node:
-    id: int  # ID del nodo
+    id: int
     """ID del nodo"""
 
-    x: float  # coordinate assolute in millimetri
+    tag: str
+    """tag del nodo"""
+
+    x: float
     """ascissa assoluta in millimetri """
 
-    y: float  # coordinate assolute in millimetri
+    y: float
     """ordinata assoluta in millimetri """
 
     coordinates: tuple[float, float]
@@ -20,8 +23,9 @@ class Node:
     loads: np.ndarray = np.array([0.0, 0.0, 0.0], dtype=float)
     """carichi (Fx, Fy, Mz) in coordinate globali (N, N, Nm)"""
 
-    def __init__(self, id: int, coordinates: tuple[float, float]):
+    def __init__(self, id: int, tag: str, coordinates: tuple[float, float]):
         self.id = id
+        self.tag = tag
         self.coordinates = coordinates
         self.x, self.y = coordinates
 

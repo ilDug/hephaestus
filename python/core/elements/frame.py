@@ -22,32 +22,39 @@ class Frame:
     def __init__(self):
         pass
 
-    def add_node(self, coordinates: tuple[float, float]) -> int:
+    def add_node(self, coordinates: tuple[float, float], tag: str = None) -> int:
         """Aggiunge un nodo alla struttura"""
-        node = Node(len(self.nodes) + 1, coordinates)
-        self.nodes.append(node)
-        return node.id
+        id = len(self.nodes)
+        tag = tag if tag is not None else f"n{id+1}"
 
-    def add_beam(self, i: int, j: int) -> Beam:
-        """Aggiunge un elemento alla struttura"""
+        # check if already exists a node with the same tag
+        if tag and self.node(tag):
+            raise ValueError(f"Node with tag {tag} already exists")
+
+        # check if already exists a node with the same coordinates
+        if any(node for node in self.nodes if node.coordinates == coordinates):
+            raise ValueError(f"Node with coordinates {coordinates} already exists")
+
+        node = Node(id, tag, coordinates)
+        self.nodes.append(node)
+        return node.tag
+
+    def add_beam(self, i: str, j: str) -> Beam:
+        """Aggiunge un elemento alla struttura. i e j sono i tag dei nodi"""
         start = self.node(i)
         end = self.node(j)
         beam = Beam(start, end)
         self.beams.append(beam)
         return beam
 
-    def node(self, n: int | str) -> Node:
-        """Restituisce il nodo con ID n"""
-        # if n is a string, convert it to an integer
-        if isinstance(n, str):
-            n = n.replace("n", "")
-            n = int(n)
-        return next((node for node in self.nodes if node.id == n), None)
+    def node(self, tag: str) -> Node:
+        """Restituisce il nodo con corrispondente al tag"""
+        return next((node for node in self.nodes if node.tag == tag), None)
 
-    def beam(self, n1: int, n2: int) -> Beam:
-        """Restituisce il beam con nodi n1 e n2"""
+    def beam(self, n1: str, n2: str) -> Beam:
+        """Restituisce il beam con nodiaventi tag n1 e n2"""
         names = [f"{n1}-{n2}", f"{n2}-{n1}"]
-        return next((beam for beam in self.beams if beam.id in names), None)
+        return next((beam for beam in self.beams if beam.tag in names), None)
 
     def restraints(self, by_node: bool = True) -> np.ndarray:
         """Returns the restraints matrix for the frame"""
@@ -77,8 +84,8 @@ class Frame:
         # per ogni trave calcola i carichi equivalenti sui nodi e li AGGIUNGE sai carichi dei nodi
         for beam in self.beams:
             eq_i, eq_j = beam.equivalent_loads()
-            loads[beam.i.id - 1] += eq_i if mode == "ALL" else 0
-            loads[beam.j.id - 1] += eq_j if mode == "ALL" else 0
+            loads[beam.i.id] += eq_i if mode == "ALL" else 0
+            loads[beam.j.id] += eq_j if mode == "ALL" else 0
 
         # if by_node == False it reshapes the loads to a vector of size (n, 1)
         return loads if by_node else loads.reshape(-1, 1)
@@ -94,8 +101,8 @@ class Frame:
         try:
             # add the stiffness matrix of each beam to the global stiffness matrix
             for beam in self.beams:
-                i = (beam.i.id - 1) * 3
-                j = (beam.j.id - 1) * 3
+                i = (beam.i.id) * 3
+                j = (beam.j.id) * 3
 
                 # add the stiffness matrix of the beam to the global stiffness matrix
                 k_local = beam.stiffness_matrix()
@@ -194,7 +201,7 @@ class Frame:
         analysis = BeamAnalysis(sol)
         for b in self.beams:
             analysis.for_beam(b)
-            print(f"Beam {b.id}:")
+            print(f"Beam {b.tag}:")
             print(f"maxumims: {analysis.maximums()}")
             print(f"Bending moment: {analysis.Momentum()}")
 

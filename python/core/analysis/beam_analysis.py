@@ -30,8 +30,8 @@ class BeamAnalysis:
         self.beam = beam
 
         # ritrova gli index dei nodi
-        i = beam.i.id - 1
-        j = beam.j.id - 1
+        i = beam.i.id
+        j = beam.j.id
 
         # ritrova gl ispostamenti dei nodi
         self.di = self.sol.D[i]

@@ -8,7 +8,7 @@ from ..loads import DistributedLoad, PointLoad, MomentumLoad, ExternalLoad
 
 
 class Beam:
-    id: str
+    tag: str
     """identficativo della trave"""
 
     material: Material
@@ -37,7 +37,7 @@ class Beam:
         self.i = start
         self.j = end
         self.L = ((self.j.x - self.i.x) ** 2 + (self.j.y - self.i.y) ** 2) ** (1 / 2)
-        self.id = f"{self.i.id}-{self.j.id}"
+        self.tag = f"{self.i.tag}-{self.j.tag}"
 
         self.ext_loads: list[ExternalLoad] = []
         """carichi esterni applicati alla trave"""
@@ -143,7 +143,7 @@ class Beam:
             G = R.T @ K @ R  # [Kg] = [R]^T * [K] * [R]
             return G  # local stiffness matrix in the global system
         except Exception as e:
-            err = f"BEAM CLASS: error generating rotated stiffness matrix for beam {self.id}: {e}"
+            err = f"BEAM CLASS: error generating rotated stiffness matrix for beam {self.tag}: {e}"
             print(err)
             raise Exception(err)
 
