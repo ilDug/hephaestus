@@ -2,7 +2,7 @@
     "nodes": [
         {
             "tag": "n2",
-            "coordinates": [500, 0],
+            "coordinates": [300, 0],
             "loads": [0, -10, 0]
         },
         {
@@ -22,12 +22,14 @@
             "nodes": ["n1", "n2"],
             "material": "S235",
             "section": "IPE100",
-            "loads": [0, 0]
+            "loads": [0, 0],
+            "releases": [true, true]
         },
         {
             "nodes": ["n2", "n3"],
             "material": "S235",
-            "section": "IPE100"
+            "section": "IPE100",
+            "releases": [true, true]
         }
     ]
 }

@@ -20,6 +20,7 @@ b1 = (
     frame.add_beam(n1, n2)
     .set_material("S235")
     .set_section("HEA100")
+    .set_internal_releases((False, True))
     # .set_internal_releases(i=True, j=True)
     # .set_side("MINOR")
 )
@@ -27,25 +28,26 @@ b2 = (
     frame.add_beam(n2, n3)
     .set_material("S235")
     .set_section("HEA100")
+    .set_internal_releases((True, False))
     # .set_internal_releases(j=True)
 )
 
 
-frame.node(n1).set_restraints(True, True, True)
-frame.node(n3).set_restraints(True, True, True)
+frame.node(n1).set_restraints(True, True, False)
+frame.node(n3).set_restraints(True, True, False)
 
 frame.node(n2).apply_loads(Fy=-10)
 
 # frame.node(n2).apply_loads(Fy=-0.7, Fx=-0.7)
 # frame.node(n2).apply_loads(Mz=1)
 
-b1.apply_distributed_load(qx=0, qy=-10)
-b1.apply_distributed_load(qx=0, qy=-10)
+# b1.apply_distributed_load(qx=0, qy=-10)
+# b1.apply_distributed_load(qx=0, qy=-10)
 # b1.apply_distributed_load(qx=1, qy=2)
 # b1.apply_point_load(fy=-0.707, fx=0.707, x=300)
 # b1.apply_momentum_load(x=300, M=1)
 
-b2.apply_distributed_load(qx=0, qy=-10)
+# b2.apply_distributed_load(qx=0, qy=-10)
 # b2.apply_point_load(fy=-1, x=400)
 # b2.apply_momentum_load(x=300, M=1)
 

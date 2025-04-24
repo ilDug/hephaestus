@@ -107,10 +107,10 @@ class Frame:
                 # add the stiffness matrix of the beam to the global stiffness matrix
                 k_local = beam.stiffness_matrix()
 
-                K[i : i + 3, i : i + 3] += k_local[:3, :3]  # primo quadrante
-                K[j : j + 3, j : j + 3] += k_local[3:, 3:]  # quarto quadrante
-                K[i : i + 3, j : j + 3] += k_local[:3, 3:]  # secondo quadrante
-                K[j : j + 3, i : i + 3] += k_local[3:, :3]  # terzo quadrante
+                K[i : i + 3, i : i + 3] += k_local[:3, :3]  # quadrante superiore sx
+                K[i : i + 3, j : j + 3] += k_local[:3, 3:]  # quadrante superiore dx
+                K[j : j + 3, i : i + 3] += k_local[3:, :3]  # quadrante inferiore sx
+                K[j : j + 3, j : j + 3] += k_local[3:, 3:]  # quadrante inferiore dx
             return K
         except Exception as e:
             print(f"FRAME CLASS: Error in global stiffness matrix: {e}")
@@ -142,6 +142,10 @@ class Frame:
 
         # annulla le righe del vettore dei carichi per i nodi vincolati
         F = R * L
+
+        # np.set_printoptions(precision=0, suppress=True)
+        # print(Kr)
+        # print("=========")
 
         # solve the equation [K] x {d} = {F} for {d}
         D = np.linalg.solve(Kr, F)
