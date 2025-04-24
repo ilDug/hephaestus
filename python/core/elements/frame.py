@@ -218,7 +218,7 @@ Frame Solution
 {report_beam_actions(sol)}
 {report_header()}
         """
-        with open(path, "w") as f:
+        with open(path, "w", encoding="utf-8") as f:
             f.write(out)
         print(f"Solution saved to {path}")
         return out
