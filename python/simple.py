@@ -50,7 +50,8 @@ b2.apply_distributed_load(qx=0, qy=-10)
 # b2.apply_momentum_load(x=300, M=1)
 
 
-frame.save_solution("simple.txt")
+out = frame.save_solution("simple.txt")
+print(out)
 
 
 # sol: FrameSolution = frame.solve()

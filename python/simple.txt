@@ -1,5 +1,5 @@
  
-2025-04-23 22:33:50
+2025-04-24 10:01:37
 Frame Solution
 ====================
 ┌──────┬─────────────┬────────────┬────────┬──────────┬──────────┐
@@ -18,9 +18,9 @@ Frame Solution
 ┌──────┬─────────┬──────────┬───────────┬──────────┬───────────┬─────────────┐
 │ Node │    Hr   │    Vr    │     Mr    │    dx    │     dy    │      rz     │
 ├──────┼─────────┼──────────┼───────────┼──────────┼───────────┼─────────────┤
-│  n1  │ 0.00 kN │ 14.06 kN │  2.66 kNm │ 0.000 mm │ -0.000 mm │ 0.00000 rad │
-│  n2  │ 0.00 kN │ 0.00 kN  │ -0.00 kNm │ 0.000 mm │ -0.124 mm │ 0.00002 rad │
-│  n3  │ 0.00 kN │ 10.94 kN │ -2.34 kNm │ 0.000 mm │ -0.000 mm │ 0.00000 rad │
+│  n1  │ 0.00 kN │ 14.06 kN │  2.66 kNm │ 0.000 mm │  0.000 mm │ 0.00000 rad │
+│  n2  │ 0.00 kN │ 0.00 kN  │  0.00 kNm │ 0.000 mm │ -0.124 mm │ 0.00002 rad │
+│  n3  │ 0.00 kN │ 10.94 kN │ -2.34 kNm │ 0.000 mm │  0.000 mm │ 0.00000 rad │
 └──────┴─────────┴──────────┴───────────┴──────────┴───────────┴─────────────┘
 ┌───────┬───────────────────────────────┐
 │  Beam │    distibuted load [qx, qy]   │
@@ -36,7 +36,7 @@ Note:
     an X indicates a restrained degree of freedom, a - indicates a free degree of freedom
     a node can be restrained in the horizontal, vertical, and rotational directions
     ordererd as [X X X].
-    example: 
+    example:
     [X X -] is a hinge
     [- - -] is a free node
     [- X -] is a vertical support (horizontal roller)
@@ -46,7 +46,7 @@ Note:
 
     REACTIONS:
     - Hr = Horizontal reaction, 
-    - Vr = Vertical reaction, 
+    - Vr = Vertical reaction,
     - Mr = Moment reaction
 
     ACTIONS:
