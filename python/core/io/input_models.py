@@ -1,4 +1,3 @@
-import yaml
 from pydantic import BaseModel
 
 
@@ -32,5 +31,6 @@ class InputFrame(BaseModel):
     """
     Input file for the model.
     """
+
     nodes: list[InputNode]
     beams: list[InputBeam]

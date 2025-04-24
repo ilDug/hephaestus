@@ -15,7 +15,7 @@ Note:
     an X indicates a restrained degree of freedom, a - indicates a free degree of freedom
     a node can be restrained in the horizontal, vertical, and rotational directions
     ordererd as [X X X].
-    example: 
+    example:
     [X X -] is a hinge
     [- - -] is a free node
     [- X -] is a vertical support (horizontal roller)
@@ -25,7 +25,7 @@ Note:
 
     REACTIONS:
     - Hr = Horizontal reaction, 
-    - Vr = Vertical reaction, 
+    - Vr = Vertical reaction,
     - Mr = Moment reaction
 
     ACTIONS:

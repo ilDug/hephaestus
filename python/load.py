@@ -1,8 +1,6 @@
 from core.elements import Frame
-from core.materials import select_material
-from core.sections import select_section
 from core.analysis import *
-from core.load_frame import InputFrame
+from core.io import InputFrame
 import json
 
 # creo una struttura

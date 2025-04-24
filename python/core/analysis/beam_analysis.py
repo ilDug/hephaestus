@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..loads import DistributedLoad, PointLoad, MomentumLoad
+from ..loads import DistributedLoad
 from .solution import FrameSolution
 
 from core.elements import Beam
