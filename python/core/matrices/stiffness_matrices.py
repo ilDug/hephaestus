@@ -308,7 +308,7 @@ class StiffnessMatrix2D:
         # ##########################################################################
         # reazioni dovute allo traslazione trasverale del nodo i
         Knivi = 0
-        Ktivi = 0  # diagonale
+        Ktivi = 1  # diagonale
         Kmivi = 0
         Knjvi = 0
         Ktjvi = 0
@@ -318,7 +318,7 @@ class StiffnessMatrix2D:
         # reazioni dovute alla rotazione del nodo i
         Kniri = 0
         Ktiri = 0
-        Kmiri = 0  # diagonale
+        Kmiri = 1  # diagonale
         Knjri = 0
         Ktjri = 0
         Kmjri = 0
@@ -338,7 +338,7 @@ class StiffnessMatrix2D:
         Ktivj = 0
         Kmivj = 0
         Knjvj = 0
-        Ktjvj = 0  # diagonale
+        Ktjvj = 1  # diagonale
         Kmjvj = 0
 
         # ##########################################################################
@@ -348,7 +348,7 @@ class StiffnessMatrix2D:
         Kmirj = 0
         Knjrj = 0
         Ktjrj = 0
-        Kmjrj = 0  # diagonale
+        Kmjrj = 1  # diagonale
 
         stiffness_matrix = np.array(
             [
